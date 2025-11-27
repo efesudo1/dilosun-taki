@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol - Diloşun Takı Dünyası</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="/css/buttons.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <h1>💎 Diloşun Takı Dünyası</h1>
+                <h2>Kayıt Ol</h2>
+                <p>Yeni hesap oluşturun</p>
+            </div>
+
+            <% if (hata) { %>
+                <div class="alert alert-error">
+                    <%= hata %>
+                </div>
+            <% } %>
+
+            <form action="/register" method="POST" class="auth-form">
+                <div class="form-group">
+                    <label for="email">E-posta Adresi *</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="ornek@email.com" 
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ad">Ad</label>
+                        <input 
+                            type="text" 
+                            id="ad" 
+                            name="ad" 
+                            placeholder="Adınız"
+                            autocomplete="given-name"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="soyad">Soyad</label>
+                        <input 
+                            type="text" 
+                            id="soyad" 
+                            name="soyad" 
+                            placeholder="Soyadınız"
+                            autocomplete="family-name"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="sifre">Şifre *</label>
+                    <input 
+                        type="password" 
+                        id="sifre" 
+                        name="sifre" 
+                        placeholder="En az 6 karakter" 
+                        required
+                        minlength="6"
+                        autocomplete="new-password"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="sifreTekrar">Şifre Tekrar *</label>
+                    <input 
+                        type="password" 
+                        id="sifreTekrar" 
+                        name="sifreTekrar" 
+                        placeholder="Şifrenizi tekrar giriniz" 
+                        required
+                        minlength="6"
+                        autocomplete="new-password"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="rol">Hesap Türü</label>
+                    <select id="rol" name="rol" class="form-select">
+                        <option value="musteri" selected>Müşteri</option>
+                        <option value="admin" disabled>Admin (Sadece yönetici tarafından atanabilir)</option>
+                    </select>
+                    <small class="form-hint">Yeni kayıtlar otomatik olarak müşteri olarak oluşturulur.</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Kayıt Ol</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Zaten hesabınız var mı? <a href="/login">Giriş Yap</a></p>
+                <p><a href="/">Ana Sayfaya Dön</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diloşun Takı Dünyası - Elmas Kalitesinde Takılar</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/placeholder.css">
+    <link rel="stylesheet" href="/css/buttons.css">
+
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1>💎 Diloşun Takı Dünyası</h1>
+                    <p class="tagline">Zarafetin ve Şıklığın Adresi</p>
+                </div>
+                <div class="user-menu">
+                    <% if (kullanici) { %>
+                        <div class="user-info">
+                            <span class="user-name">
+                                <%= kullanici.ad ? kullanici.ad + ' ' + (kullanici.soyad || '' ) : kullanici.email %>
+                                    <% if (kullanici.rol==='admin' ) { %>
+                                        <span class="badge-admin">Admin</span>
+                                        <% } else { %>
+                                            <span class="badge-musteri">Müşteri</span>
+                                            <% } %>
+                            </span>
+                            <div class="header-links">
+                                <% if (kullanici.rol==='admin' ) { %>
+                                    <a href="/admin">👑 Admin Panel</a>
+                                    <% } %>
+                                        <a href="/logout">Çıkış Yap</a>
+                            </div>
+                        </div>
+                        <% } else { %>
+                            <div class="auth-buttons">
+                                <a href="/login" class="btn-login">Giriş Yap</a>
+                                <a href="/register" class="btn-register">Kayıt Ol</a>
+                            </div>
+                            <% } %>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="container">
+        <div class="filter-section">
+            <div class="filter-group">
+                <label for="tur-filter">Takı Türü:</label>
+                <select id="tur-filter" class="filter-select">
+                    <option value="tumu" <%=seciliTur==='tumu' ? 'selected' : '' %>>Tümü</option>
+                    <% turler.forEach(tur=> { %>
+                        <option value="<%= tur.tur %>" <%=seciliTur===tur.tur ? 'selected' : '' %>>
+                            <%= tur.tur.charAt(0).toUpperCase() + tur.tur.slice(1) %>
+                        </option>
+                        <% }); %>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="materyal-filter">Materyal:</label>
+                <select id="materyal-filter" class="filter-select">
+                    <option value="tumu" <%=seciliMateryal==='tumu' ? 'selected' : '' %>>Tümü</option>
+                    <% materyaller.forEach(materyal=> { %>
+                        <option value="<%= materyal.materyal %>" <%=seciliMateryal===materyal.materyal ? 'selected' : ''
+                            %>>
+                            <%= materyal.materyal.charAt(0).toUpperCase() + materyal.materyal.slice(1) %>
+                        </option>
+                        <% }); %>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div id="urun-grid" class="urun-grid">
+            <% if (urunler.length===0) { %>
+                <div class="no-products">
+                    <p>Seçtiğiniz kriterlere uygun ürün bulunamadı.</p>
+                </div>
+                <% } else { %>
+                    <% urunler.forEach(urun=> { %>
+                        <div class="urun-kart" data-tur="<%= urun.tur %>" data-materyal="<%= urun.materyal %>">
+                            <div class="urun-resim">
+                                <% if (urun.resim) { %>
+                                    <img src="<%= urun.resim %>" alt="<%= urun.ad %>"
+                                        onerror="this.classList.add('placeholder-img')">
+                                    <% } else { %>
+                                        <div class="placeholder-img"
+                                            style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 4rem; color: rgba(212, 175, 55, 0.3);">
+                                            💎
+                                        </div>
+                                        <% } %>
+                                            <div class="urun-badge">
+                                                <span class="badge-tur">
+                                                    <%= urun.tur.charAt(0).toUpperCase() + urun.tur.slice(1) %>
+                                                </span>
+                                                <span class="badge-materyal">
+                                                    <%= urun.materyal.charAt(0).toUpperCase() + urun.materyal.slice(1)
+                                                        %>
+                                                </span>
+                                            </div>
+                            </div>
+                            <div class="urun-bilgi">
+                                <h3>
+                                    <%= urun.ad %>
+                                </h3>
+                                <% if (urun.urun_kodu) { %>
+                                    <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0;">
+                                        <span
+                                            style="color: #D4AF37; font-size: 0.85rem; font-weight: 600; font-family: 'Courier New', monospace;">
+                                            <%= urun.urun_kodu %>
+                                        </span>
+                                        <button onclick="copyProductCode('<%= urun.urun_kodu %>')"
+                                            style="background: rgba(212, 175, 55, 0.2); border: 1px solid rgba(212, 175, 55, 0.4); color: #D4AF37; padding: 4px 8px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s;"
+                                            onmouseover="this.style.background='rgba(212, 175, 55, 0.3)'"
+                                            onmouseout="this.style.background='rgba(212, 175, 55, 0.2)'">
+                                            📋 Kopyala
+                                        </button>
+                                    </div>
+                                    <% } %>
+                                        <p class="urun-aciklama">
+                                            <%= urun.aciklama %>
+                                        </p>
+                                        <div class="urun-footer">
+                                            <span class="urun-fiyat">
+                                                <%= urun.fiyat.toLocaleString('tr-TR') %> ₺
+                                            </span>
+
+                                        </div>
+                            </div>
+                        </div>
+                        <% }); %>
+                            <% } %>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Diloşun Takı Dünyası. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+
+
+    <script src="/js/main.js"></script>
+</body>
+
+</html>

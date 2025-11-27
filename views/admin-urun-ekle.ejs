@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ürün Ekle - Admin Panel</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/buttons.css">
+    <style>
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(45, 45, 45, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .form-header h2 {
+            font-family: 'Playfair Display', serif;
+            color: #F4E4BC;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #D4AF37 0%, #C0C0C0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-header p {
+            color: #C0C0C0;
+            font-size: 0.95rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .form-grid-full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            color: #D4AF37;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group label .required {
+            color: #ff6b6b;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(26, 26, 26, 0.6);
+            color: #F4E4BC;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: rgba(212, 175, 55, 0.6);
+            background: rgba(26, 26, 26, 0.8);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .form-group small {
+            display: block;
+            color: #999;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .info-box {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info-box-icon {
+            font-size: 1.5rem;
+        }
+
+        .info-box-text {
+            color: #C0C0C0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1>💎 Diloşun Takı Dünyası - Admin Panel</h1>
+                </div>
+                <div class="user-menu">
+                    <div class="user-info">
+                        <span class="user-name">
+                            <%= kullanici.ad ? kullanici.ad + ' ' + (kullanici.soyad || '' ) : kullanici.email %>
+                                <span class="badge-admin">Admin</span>
+                        </span>
+                        <div class="header-links">
+                            <a href="/">Ana Sayfa</a>
+                            <a href="/logout">Çıkış Yap</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="admin-nav">
+            <a href="/admin" class="nav-item">Dashboard</a>
+            <a href="/admin/urunler" class="nav-item">Ürünler</a>
+            <a href="/admin/urun/ekle" class="nav-item active">Ürün Ekle</a>
+            <a href="/admin/kullanicilar" class="nav-item">Kullanıcılar</a>
+            <a href="/admin/siparisler" class="nav-item">Siparişler</a>
+        </div>
+
+        <div class="admin-content">
+            <% if (hata) { %>
+                <div class="alert alert-error">
+                    <%= hata %>
+                </div>
+                <% } %>
+
+                    <% if (basarili) { %>
+                        <div class="alert alert-success">
+                            <%= basarili %>
+                        </div>
+                        <% } %>
+
+                            <div class="form-container">
+                                <div class="form-header">
+                                    <h2>✨ Yeni Ürün Ekle</h2>
+                                    <p>Tüm gerekli bilgileri doldurun. Ürün kodu otomatik oluşturulacaktır.</p>
+                                </div>
+
+                                <div class="info-box">
+                                    <div class="info-box-icon">💡</div>
+                                    <div class="info-box-text">
+                                        <strong>Otomatik Ürün Kodu:</strong> Ürün eklendikten sonra benzersiz bir ürün
+                                        kodu (örn: TK-KUP-014) otomatik olarak oluşturulacaktır.
+                                    </div>
+                                </div>
+
+                                <form action="/admin/urun/ekle" method="POST">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="ad">
+                                                <span>Ürün Adı</span>
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input type="text" id="ad" name="ad" placeholder="Örn: Elmaslı Altın Küpe"
+                                                required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="tur">
+                                                <span>Takı Türü</span>
+                                                <span class="required">*</span>
+                                            </label>
+                                            <select id="tur" name="tur" required>
+                                                <option value="">Seçiniz</option>
+                                                <option value="küpe">💎 Küpe</option>
+                                                <option value="bilezik">📿 Bilezik</option>
+                                                <option value="kolye">📿 Kolye</option>
+                                                <option value="yüzük">💍 Yüzük</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="materyal">
+                                                <span>Materyal</span>
+                                                <span class="required">*</span>
+                                            </label>
+                                            <select id="materyal" name="materyal" required>
+                                                <option value="">Seçiniz</option>
+                                                <option value="altın">🥇 Altın</option>
+                                                <option value="gümüş">🥈 Gümüş</option>
+                                                <option value="bronz">🥉 Bronz</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="fiyat">
+                                                <span>Fiyat (₺)</span>
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input type="number" id="fiyat" name="fiyat" step="0.01" min="0"
+                                                placeholder="0.00" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="stok">
+                                                <span>Stok Miktarı</span>
+                                            </label>
+                                            <input type="number" id="stok" name="stok" min="0" value="0"
+                                                placeholder="0">
+                                            <small>Varsayılan: 0</small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="resim">
+                                                <span>Resim Yolu</span>
+                                            </label>
+                                            <input type="text" id="resim" name="resim" placeholder="/images/urun.jpg">
+                                            <small>Resmi public/images/ klasörüne ekleyin</small>
+                                        </div>
+
+                                        <div class="form-group form-grid-full">
+                                            <label for="aciklama">
+                                                <span>Ürün Açıklaması</span>
+                                            </label>
+                                            <textarea id="aciklama" name="aciklama" rows="4"
+                                                placeholder="Ürün hakkında detaylı açıklama yazın..."></textarea>
+                                            <small>Müşterilerin göreceği açıklama metni</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary" style="min-width: 180px;">
+                                            <span>✨</span>
+                                            <span>Ürünü Ekle</span>
+                                        </button>
+                                        <a href="/admin/urunler" class="btn btn-secondary"
+                                            style="text-decoration: none; min-width: 140px;">
+                                            <span>←</span>
+                                            <span>İptal</span>
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Diloşun Takı Dünyası. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

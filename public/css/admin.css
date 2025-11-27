@@ -1,0 +1,254 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Admin Panel Arka Plan */
+body {
+    background: 
+        /* Mücevher arka plan görseli - önce yeni görsel, sonra diğer formatlar */
+        url('/images/jewelry-background.jpg.jpg'),
+        url('/images/jewelry-background.webp'),
+        url('/images/jewelry-background.jpg'),
+        url('/images/jewelry-background.png'),
+        /* Fallback: CSS mücevher deseni */
+        radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.12) 0%, transparent 35%),
+        radial-gradient(circle at 80% 80%, rgba(192, 192, 192, 0.1) 0%, transparent 35%),
+        radial-gradient(circle at 50% 50%, rgba(205, 127, 50, 0.08) 0%, transparent 40%),
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(212, 175, 55, 0.025) 2px,
+            rgba(212, 175, 55, 0.025) 4px
+        ),
+        linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+    background-size: 
+        cover, cover, cover, cover, /* Görsel formatları - tüm sayfaya yayılır */
+        cover,
+        cover,
+        20px 20px,
+        cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: #f5f5f5;
+    position: relative;
+    background-blend-mode: normal, normal, normal, normal, normal, normal, normal;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at 15% 25%, rgba(212, 175, 55, 0.15) 0%, transparent 40%),
+        radial-gradient(ellipse at 85% 75%, rgba(192, 192, 192, 0.12) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+    animation: jewelShimmer 10s ease-in-out infinite;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.4) 0%, rgba(45, 45, 45, 0.3) 50%, rgba(26, 26, 26, 0.4) 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes jewelShimmer {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.85;
+        transform: scale(1.03);
+    }
+}
+
+.admin-nav {
+    background: rgba(45, 45, 45, 0.4);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 15px;
+    padding: 15px;
+    margin: 20px 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.nav-item {
+    padding: 12px 24px;
+    background: rgba(26, 26, 26, 0.6);
+    color: #C0C0C0;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    letter-spacing: 0.5px;
+}
+
+.nav-item:hover {
+    background: rgba(212, 175, 55, 0.2);
+    color: #F4E4BC;
+    border-color: rgba(212, 175, 55, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.admin-content {
+    background: rgba(45, 45, 45, 0.35);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+.stat-card {
+    background: rgba(45, 45, 45, 0.3);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    border-color: rgba(212, 175, 55, 0.5);
+}
+
+.stat-card h3 {
+    font-family: 'Playfair Display', serif;
+    color: #F4E4BC;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.stat-card .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #D4AF37;
+    font-family: 'Playfair Display', serif;
+}
+
+.action-btn {
+    background: rgba(45, 45, 45, 0.35);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 15px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: block;
+    color: #F4E4BC;
+}
+
+.action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+    border-color: rgba(212, 175, 55, 0.5);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: rgba(26, 26, 26, 0.6);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.data-table th {
+    background: rgba(212, 175, 55, 0.2);
+    color: #F4E4BC;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    font-family: 'Playfair Display', serif;
+    border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+}
+
+.data-table td {
+    padding: 15px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    color: #C0C0C0;
+}
+
+.data-table tr:hover {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-beklemede {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.4);
+}
+
+.status-onaylandi {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.4);
+}
+
+.status-hazirlaniyor {
+    background: rgba(0, 123, 255, 0.2);
+    color: #007bff;
+    border: 1px solid rgba(0, 123, 255, 0.4);
+}
+
+.status-kargoda {
+    background: rgba(23, 162, 184, 0.2);
+    color: #17a2b8;
+    border: 1px solid rgba(23, 162, 184, 0.4);
+}
+
+.status-tamamlandi {
+    background: rgba(40, 167, 69, 0.3);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.5);
+}
+
+.status-iptal {
+    background: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.4);
+}
+
+
+
+
+

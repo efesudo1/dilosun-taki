@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ürün Güncelle - Admin Panel</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/buttons.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1>💎 Diloşun Takı Dünyası - Admin Panel</h1>
+                </div>
+                <div class="user-menu">
+                    <div class="user-info">
+                        <span class="user-name">
+                            <%= kullanici.ad ? kullanici.ad + ' ' + (kullanici.soyad || '' ) : kullanici.email %>
+                                <span class="badge-admin">Admin</span>
+                        </span>
+                        <div class="header-links">
+                            <a href="/">Ana Sayfa</a>
+                            <a href="/logout">Çıkış Yap</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="admin-nav">
+            <a href="/admin" class="nav-item">Dashboard</a>
+            <a href="/admin/urunler" class="nav-item">Ürünler</a>
+            <a href="/admin/urun/ekle" class="nav-item">Ürün Ekle</a>
+            <a href="/admin/kullanicilar" class="nav-item">Kullanıcılar</a>
+            <a href="/admin/siparisler" class="nav-item">Siparişler</a>
+        </div>
+
+        <div class="admin-content">
+            <div style="margin-bottom: 20px;">
+                <a href="/admin/urunler"
+                    style="color: #D4AF37; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3); transition: all 0.3s ease;"
+                    onmouseover="this.style.background='rgba(212, 175, 55, 0.2)'; this.style.borderColor='rgba(212, 175, 55, 0.5)'"
+                    onmouseout="this.style.background='rgba(212, 175, 55, 0.1)'; this.style.borderColor='rgba(212, 175, 55, 0.3)'">
+                    <span>←</span>
+                    <span>Ürünlere Dön</span>
+                </a>
+            </div>
+
+            <h2
+                style="font-family: 'Playfair Display', serif; color: #F4E4BC; background: linear-gradient(135deg, #D4AF37 0%, #C0C0C0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Ürün Güncelle - #<%= urun.id %>
+            </h2>
+
+            <% if (hata) { %>
+                <div class="alert alert-error">
+                    <%= hata %>
+                </div>
+                <% } %>
+
+                    <% if (basarili) { %>
+                        <div class="alert alert-success">
+                            <%= basarili %>
+                        </div>
+                        <% } %>
+
+                            <form method="POST" action="/admin/urun/guncelle" class="admin-form">
+                                <input type="hidden" name="urun_id" value="<%= urun.id %>">
+
+                                <div class="form-group">
+                                    <label for="urun_kodu">Ürün Kodu (Otomatik Oluşturuldu)</label>
+                                    <input type="text" id="urun_kodu"
+                                        value="<%= urun.urun_kodu || 'Henüz oluşturulmadı' %>" readonly
+                                        style="background: rgba(26, 26, 26, 0.5); color: #D4AF37; font-family: 'Courier New', monospace; font-weight: 600; cursor: not-allowed;">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ad">Ürün Adı *</label>
+                                    <input type="text" id="ad" name="ad" value="<%= urun.ad %>" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="tur">Takı Türü *</label>
+                                    <select id="tur" name="tur" required>
+                                        <option value="">Seçiniz</option>
+                                        <option value="küpe" <%=urun.tur==='küpe' ? 'selected' : '' %>>Küpe</option>
+                                        <option value="bilezik" <%=urun.tur==='bilezik' ? 'selected' : '' %>>Bilezik
+                                        </option>
+                                        <option value="kolye" <%=urun.tur==='kolye' ? 'selected' : '' %>>Kolye</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="materyal">Materyal *</label>
+                                    <select id="materyal" name="materyal" required>
+                                        <option value="">Seçiniz</option>
+                                        <option value="altın" <%=urun.materyal==='altın' ? 'selected' : '' %>>Altın
+                                        </option>
+                                        <option value="gümüş" <%=urun.materyal==='gümüş' ? 'selected' : '' %>>Gümüş
+                                        </option>
+                                        <option value="bronz" <%=urun.materyal==='bronz' ? 'selected' : '' %>>Bronz
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="fiyat">Fiyat (₺) *</label>
+                                    <input type="number" id="fiyat" name="fiyat" step="0.01" min="0"
+                                        value="<%= urun.fiyat %>" required>
+                                    <small>Mevcut fiyat: <%= urun.fiyat.toLocaleString('tr-TR') %> ₺</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="stok">Stok Miktarı *</label>
+                                    <input type="number" id="stok" name="stok" min="0" value="<%= urun.stok %>"
+                                        required>
+                                    <small>Mevcut stok: <%= urun.stok %> adet</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="resim">Resim Yolu</label>
+                                    <input type="text" id="resim" name="resim" value="<%= urun.resim || '' %>"
+                                        placeholder="/images/urun.jpg">
+                                    <small>Resim dosyasını public/images/ klasörüne ekleyin ve yolunu belirtin.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="aciklama">Açıklama</label>
+                                    <textarea id="aciklama" name="aciklama"
+                                        rows="3"><%= urun.aciklama || '' %></textarea>
+                                </div>
+
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="submit" class="btn btn-primary">
+                                        <span>💎</span>
+                                        <span>Ürünü Güncelle</span>
+                                    </button>
+                                    <a href="/admin/urunler" class="btn btn-secondary"
+                                        style="margin-left: 10px; text-decoration: none;">
+                                        <span>←</span>
+                                        <span>İptal</span>
+                                    </a>
+                                </div>
+                            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Diloşun Takı Dünyası. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

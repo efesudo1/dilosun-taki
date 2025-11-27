@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siparişlerim - Diloşun Takı Dünyası</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/sepet.css">
+    <link rel="stylesheet" href="/css/buttons.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <style>
+        .siparis-kart {
+            background: rgba(45, 45, 45, 0.35);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .siparis-kart:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+
+        .siparis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .siparis-bilgi {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .siparis-bilgi-item {
+            background: rgba(26, 26, 26, 0.5);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .siparis-bilgi-item strong {
+            color: #D4AF37;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .siparis-bilgi-item span {
+            color: #C0C0C0;
+            font-size: 1rem;
+        }
+
+        .siparis-urunler {
+            margin-top: 20px;
+        }
+
+        .siparis-urun-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(26, 26, 26, 0.5);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .siparis-urun-resim {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(45, 45, 45, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .siparis-urun-resim img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .siparis-urun-bilgi {
+            flex: 1;
+        }
+
+        .siparis-urun-bilgi h4 {
+            color: #F4E4BC;
+            margin-bottom: 5px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .siparis-urun-bilgi p {
+            color: #C0C0C0;
+            font-size: 0.9rem;
+            margin: 3px 0;
+        }
+
+        .siparis-urun-fiyat {
+            text-align: right;
+            color: #D4AF37;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .empty-siparis {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(45, 45, 45, 0.35);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .empty-siparis p {
+            font-size: 1.5rem;
+            color: #C0C0C0;
+            margin-bottom: 20px;
+            font-family: 'Playfair Display', serif;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1>💎 Diloşun Takı Dünyası</h1>
+                    <p class="tagline">Zarafetin ve Şıklığın Adresi</p>
+                </div>
+                <div class="user-menu">
+                    <% if (kullanici) { %>
+                        <div class="user-info">
+                            <span class="user-name">
+                                <%= kullanici.ad ? kullanici.ad + ' ' + (kullanici.soyad || '') : kullanici.email %>
+                                <% if (kullanici.rol === 'admin') { %>
+                                    <span class="badge-admin">Admin</span>
+                                <% } else { %>
+                                    <span class="badge-musteri">Müşteri</span>
+                                <% } %>
+                            </span>
+                            <div class="header-links">
+                                <a href="/">🏠 Ana Sayfa</a>
+                                <% if (kullanici.rol !== 'admin') { %>
+                                    <button class="sepet-toggle-btn" id="sepet-toggle" style="display: none;">
+                                        🛒 Sepetim 
+                                        <span class="sepet-count" id="sepet-count">0</span>
+                                    </button>
+                                    <a href="/siparislerim">📦 Siparişlerim</a>
+                                <% } %>
+                                <% if (kullanici.rol === 'admin') { %>
+                                    <a href="/admin">👑 Admin Panel</a>
+                                <% } %>
+                                <a href="/logout">Çıkış Yap</a>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <div class="auth-buttons">
+                            <a href="/login" class="btn-login">Giriş Yap</a>
+                            <a href="/register" class="btn-register">Kayıt Ol</a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h2 class="page-title">Siparişlerim</h2>
+
+            <% if (siparisler.length === 0) { %>
+                <div class="empty-siparis">
+                    <p>Henüz siparişiniz bulunmamaktadır.</p>
+                    <a href="/" class="btn btn-primary" style="text-decoration: none;">
+                        <span>🛍️</span>
+                        <span>Alışverişe Başla</span>
+                    </a>
+                </div>
+            <% } else { %>
+                <% siparisler.forEach(siparis => { %>
+                    <div class="siparis-kart">
+                        <div class="siparis-header">
+                            <div>
+                                <h3 style="color: #F4E4BC; font-family: 'Playfair Display', serif; margin: 0;">
+                                    Sipariş #<%= siparis.id %>
+                                </h3>
+                                <p style="color: #C0C0C0; margin: 5px 0 0 0; font-size: 0.9rem;">
+                                    <%= new Date(siparis.olusturma_tarihi).toLocaleString('tr-TR') %>
+                                </p>
+                            </div>
+                            <div>
+                                <% 
+                                    const durumMap = {
+                                        'beklemede': { text: 'Onay Bekliyor', icon: '⏳' },
+                                        'onaylandi': { text: 'Sipariş Onaylandı', icon: '✅' },
+                                        'hazirlaniyor': { text: 'Hazırlanıyor', icon: '🔨' },
+                                        'kargoda': { text: 'Yola Çıktı', icon: '🚚' },
+                                        'tamamlandi': { text: 'Teslim Edildi', icon: '📦' },
+                                        'iptal': { text: 'İptal', icon: '❌' }
+                                    };
+                                    const durum = durumMap[siparis.durum] || { text: siparis.durum, icon: '📋' };
+                                %>
+                                <span class="status-badge status-<%= siparis.durum %>" style="font-size: 1rem; padding: 10px 20px;">
+                                    <span><%= durum.icon %></span>
+                                    <span style="margin-left: 8px;"><%= durum.text %></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="siparis-bilgi">
+                            <div class="siparis-bilgi-item">
+                                <strong>Toplam Tutar</strong>
+                                <span style="color: #D4AF37; font-weight: 700; font-size: 1.3rem; font-family: 'Playfair Display', serif;">
+                                    <%= siparis.toplam_tutar.toLocaleString('tr-TR') %> ₺
+                                </span>
+                            </div>
+                            <div class="siparis-bilgi-item">
+                                <strong>Ürün Sayısı</strong>
+                                <span><%= siparis.urun_sayisi || (siparis.detaylar ? siparis.detaylar.length : 0) %> adet</span>
+                            </div>
+                            <% if (siparis.adres) { %>
+                                <div class="siparis-bilgi-item">
+                                    <strong>Adres</strong>
+                                    <span><%= siparis.adres %></span>
+                                </div>
+                            <% } %>
+                            <% if (siparis.telefon) { %>
+                                <div class="siparis-bilgi-item">
+                                    <strong>Telefon</strong>
+                                    <span><%= siparis.telefon %></span>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <% if (siparis.detaylar && siparis.detaylar.length > 0) { %>
+                            <div class="siparis-urunler">
+                                <h4 style="color: #F4E4BC; font-family: 'Playfair Display', serif; margin-bottom: 15px;">Sipariş Ürünleri</h4>
+                                <% siparis.detaylar.forEach(detay => { %>
+                                    <div class="siparis-urun-item">
+                                        <div class="siparis-urun-resim">
+                                            <% if (detay.resim) { %>
+                                                <img src="<%= detay.resim %>" alt="<%= detay.urun_ad %>" onerror="this.parentElement.innerHTML='💎'">
+                                            <% } else { %>
+                                                💎
+                                            <% } %>
+                                        </div>
+                                        <div class="siparis-urun-bilgi">
+                                            <h4><%= detay.urun_ad %></h4>
+                                            <p>Adet: <%= detay.adet %></p>
+                                            <p>Birim Fiyat: <%= detay.birim_fiyat.toLocaleString('tr-TR') %> ₺</p>
+                                        </div>
+                                        <div class="siparis-urun-fiyat">
+                                            <%= detay.toplam_fiyat.toLocaleString('tr-TR') %> ₺
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        <% } %>
+
+                        <% if (siparis.notlar) { %>
+                            <div style="margin-top: 20px; padding: 15px; background: rgba(26, 26, 26, 0.5); border-radius: 10px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                                <strong style="color: #D4AF37;">Notlar:</strong>
+                                <p style="color: #C0C0C0; margin: 5px 0 0 0;"><%= siparis.notlar %></p>
+                            </div>
+                        <% } %>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Diloşun Takı Dünyası. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+</body>
+</html>
+

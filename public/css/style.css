@@ -1,0 +1,764 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --gold: #D4AF37;
+    --gold-light: #F4E4BC;
+    --gold-dark: #B8941F;
+    --silver: #C0C0C0;
+    --silver-light: #E8E8E8;
+    --diamond: #B9F2FF;
+    --dark-bg: #1a1a1a;
+    --dark-secondary: #2d2d2d;
+    --text-light: #f5f5f5;
+    --text-dark: #333;
+    --shadow-gold: rgba(212, 175, 55, 0.3);
+    --shadow-silver: rgba(192, 192, 192, 0.2);
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: 
+        /* Mücevher arka plan görseli - önce yeni görsel, sonra diğer formatlar */
+        url('/images/jewelry-background.jpg.jpg'),
+        url('/images/jewelry-background.webp'),
+        url('/images/jewelry-background.jpg'),
+        url('/images/jewelry-background.png'),
+        /* Fallback: CSS ile mücevher deseni */
+        radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 75% 75%, rgba(192, 192, 192, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(205, 127, 50, 0.1) 0%, transparent 50%),
+        /* Bronz mücevher efekti */
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(212, 175, 55, 0.03) 2px,
+            rgba(212, 175, 55, 0.03) 4px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 2px,
+            rgba(192, 192, 192, 0.02) 2px,
+            rgba(192, 192, 192, 0.02) 4px
+        ),
+        /* Ana gradient */
+        linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+    background-size: 
+        cover, cover, cover, cover, /* Görsel formatları - tüm sayfaya yayılır */
+        cover,
+        cover,
+        cover,
+        20px 20px,
+        20px 20px,
+        cover;
+    background-position: 
+        center, center, center, center, /* Görsel formatları - merkez */
+        center,
+        center,
+        0 0,
+        0 0,
+        center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: var(--text-light);
+    position: relative;
+    background-blend-mode: normal, normal, normal, normal, normal, normal, normal, normal;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Futuristik mücevher parıltıları */
+        radial-gradient(ellipse at 15% 30%, rgba(212, 175, 55, 0.2) 0%, transparent 40%),
+        radial-gradient(ellipse at 85% 70%, rgba(192, 192, 192, 0.18) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 20%, rgba(205, 127, 50, 0.15) 0%, transparent 35%),
+        radial-gradient(ellipse at 20% 80%, rgba(212, 175, 55, 0.12) 0%, transparent 30%),
+        radial-gradient(ellipse at 80% 30%, rgba(192, 192, 192, 0.1) 0%, transparent 30%),
+        /* Elmas parıltıları */
+        radial-gradient(circle at 40% 60%, rgba(185, 242, 255, 0.08) 0%, transparent 25%),
+        radial-gradient(circle at 60% 40%, rgba(185, 242, 255, 0.06) 0%, transparent 20%);
+    pointer-events: none;
+    z-index: 0;
+    animation: jewelShimmer 8s ease-in-out infinite;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Hafif overlay - görsel daha görünür, metin okunabilir */
+        linear-gradient(135deg, rgba(26, 26, 26, 0.4) 0%, rgba(45, 45, 45, 0.3) 50%, rgba(26, 26, 26, 0.4) 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes jewelShimmer {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    25% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(0.98);
+    }
+    75% {
+        opacity: 0.85;
+        transform: scale(1.02);
+    }
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Header - Lüks Altın Tema - Şeffaf */
+header {
+    background: rgba(26, 26, 26, 0.5);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    color: var(--text-light);
+    padding: 25px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                0 0 40px var(--shadow-gold);
+    border-bottom: 2px solid rgba(212, 175, 55, 0.6);
+    position: relative;
+    z-index: 10;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--gold) 20%, 
+        var(--silver) 50%, 
+        var(--gold) 80%, 
+        transparent 100%);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.header-content > div:first-child {
+    text-align: left;
+}
+
+header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--silver) 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px var(--shadow-gold);
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+
+.tagline {
+    font-size: 1rem;
+    color: var(--silver-light);
+    font-style: italic;
+    letter-spacing: 1px;
+    font-weight: 300;
+}
+
+/* User Menu */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.user-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-light);
+}
+
+.badge-admin,
+.badge-musteri {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.badge-admin {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: #1a1a1a;
+    border: 1px solid var(--gold-light);
+}
+
+.badge-musteri {
+    background: linear-gradient(135deg, var(--silver) 0%, #a0a0a0 100%);
+    color: #1a1a1a;
+    border: 1px solid var(--silver-light);
+}
+
+.logout-btn {
+    padding: 8px 16px;
+    background: rgba(212, 175, 55, 0.2);
+    color: var(--gold-light);
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.logout-btn:hover {
+    background: rgba(212, 175, 55, 0.4);
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow-gold);
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-login,
+.btn-register {
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.btn-login {
+    background: rgba(212, 175, 55, 0.2);
+    color: var(--gold-light);
+}
+
+.btn-login:hover {
+    background: rgba(212, 175, 55, 0.4);
+    box-shadow: 0 4px 12px var(--shadow-gold);
+}
+
+.btn-register {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: #1a1a1a;
+    border: none;
+}
+
+.btn-register:hover {
+    background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--shadow-gold);
+}
+
+.header-links {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.header-links a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.header-links a:hover {
+    background: rgba(212, 175, 55, 0.3);
+    border-color: var(--gold);
+    box-shadow: 0 2px 8px var(--shadow-gold);
+}
+
+/* Navigation & Filters */
+nav {
+    background: rgba(45, 45, 45, 0.4);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 25px;
+    margin: 30px auto;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(212, 175, 55, 0.2);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.filter-section {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: var(--gold-light);
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+.filter-select {
+    padding: 12px 18px;
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    border-radius: 8px;
+    font-size: 1rem;
+    background: rgba(26, 26, 26, 0.8);
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+.filter-select:hover {
+    border-color: var(--gold);
+    box-shadow: 0 0 15px var(--shadow-gold);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 20px var(--shadow-gold);
+    background: rgba(26, 26, 26, 0.95);
+}
+
+/* Main Content */
+main {
+    padding: 30px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.urun-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
+}
+
+/* Ürün Kartları - Lüks Tasarım */
+.urun-kart {
+    background: rgba(45, 45, 45, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25),
+                0 0 0 1px rgba(212, 175, 55, 0.15);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    position: relative;
+}
+
+.urun-kart::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--gold) 50%, 
+        transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.urun-kart:hover {
+    transform: translateY(-10px) scale(1.02);
+    background: rgba(45, 45, 45, 0.3);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5),
+                0 0 30px var(--shadow-gold),
+                0 0 0 1px rgba(212, 175, 55, 0.4);
+    border-color: rgba(212, 175, 55, 0.5);
+}
+
+.urun-kart:hover::before {
+    opacity: 1;
+}
+
+.urun-resim {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+}
+
+.urun-resim img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: brightness(0.9) contrast(1.1);
+}
+
+.urun-kart:hover .urun-resim img {
+    transform: scale(1.15) rotate(2deg);
+    filter: brightness(1.1) contrast(1.2);
+}
+
+.urun-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 2;
+}
+
+.badge-tur,
+.badge-materyal {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.badge-tur {
+    background: rgba(26, 26, 26, 0.9);
+    color: var(--gold-light);
+    border-color: rgba(212, 175, 55, 0.5);
+}
+
+.badge-materyal {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: #1a1a1a;
+    border-color: var(--gold-light);
+}
+
+.urun-bilgi {
+    padding: 25px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background: rgba(26, 26, 26, 0.15);
+}
+
+.urun-bilgi h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    color: var(--gold-light);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.urun-aciklama {
+    color: var(--silver-light);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    flex-grow: 1;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+.urun-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.urun-fiyat {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--silver) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+}
+
+.sepete-ekle-btn {
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #D4AF37 0%, #B8941F 50%, #D4AF37 100%);
+    background-size: 200% 200%;
+    color: #1a1a1a;
+    border: 2px solid rgba(212, 175, 55, 0.5);
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 
+        0 4px 15px rgba(212, 175, 55, 0.4),
+        0 0 20px rgba(212, 175, 55, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.8px;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+}
+
+.sepete-ekle-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        transparent 70%);
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    transition: transform 0.6s ease;
+}
+
+.sepete-ekle-btn::after {
+    content: '✨';
+    position: absolute;
+    right: 10px;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s ease;
+}
+
+.sepete-ekle-btn:hover::before {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+}
+
+.sepete-ekle-btn:hover::after {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.sepete-ekle-btn:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 
+        0 10px 30px rgba(212, 175, 55, 0.5),
+        0 0 40px rgba(212, 175, 55, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    background-position: 100% 0;
+    border-color: rgba(212, 175, 55, 0.8);
+}
+
+.sepete-ekle-btn:active {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 
+        0 5px 20px rgba(212, 175, 55, 0.4),
+        inset 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* No Products */
+.no-products {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+    background: rgba(45, 45, 45, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.no-products p {
+    font-size: 1.3rem;
+    color: var(--silver-light);
+    font-family: 'Playfair Display', serif;
+}
+
+/* Footer */
+footer {
+    background: rgba(26, 26, 26, 0.9);
+    color: var(--text-light);
+    text-align: center;
+    padding: 30px 0;
+    margin-top: 60px;
+    border-top: 2px solid rgba(212, 175, 55, 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--gold) 50%, 
+        transparent 100%);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    header {
+        padding: 20px 0;
+    }
+
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-content > div:first-child {
+        text-align: center;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .user-info {
+        align-items: center;
+    }
+
+    .user-name {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .auth-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-login,
+    .btn-register {
+        width: 100%;
+        text-align: center;
+    }
+
+    .urun-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-select {
+        width: 100%;
+    }
+
+    .urun-footer {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .sepete-ekle-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .urun-grid {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Placeholder görsel için özel stil */
+.urun-resim img[src*="placeholder"],
+.urun-resim img[onerror] {
+    background: linear-gradient(135deg, 
+        rgba(212, 175, 55, 0.1) 0%, 
+        rgba(192, 192, 192, 0.1) 50%, 
+        rgba(212, 175, 55, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.urun-resim img[src*="placeholder"]::after,
+.urun-resim img[onerror]::after {
+    content: '💎';
+    position: absolute;
+    font-size: 4rem;
+    opacity: 0.3;
+    color: var(--gold);
+}

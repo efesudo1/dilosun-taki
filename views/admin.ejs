@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Diloşun Takı Dünyası</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/buttons.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1>💎 Diloşun Takı Dünyası - Admin Panel</h1>
+                </div>
+                <div class="user-menu">
+                    <div class="user-info">
+                        <span class="user-name">
+                            <%= kullanici.ad ? kullanici.ad + ' ' + (kullanici.soyad || '') : kullanici.email %>
+                            <span class="badge-admin">Admin</span>
+                        </span>
+                        <div class="header-links">
+                            <a href="/">Ana Sayfa</a>
+                            <a href="/logout">Çıkış Yap</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="admin-nav">
+            <a href="/admin" class="nav-item active">Dashboard</a>
+            <a href="/admin/urunler" class="nav-item">Ürünler</a>
+            <a href="/admin/urun/ekle" class="nav-item">Ürün Ekle</a>
+            <a href="/admin/kullanicilar" class="nav-item">Kullanıcılar</a>
+            <a href="/admin/siparisler" class="nav-item">Siparişler</a>
+        </div>
+
+        <div class="admin-content">
+            <h2 style="font-family: 'Playfair Display', serif; color: #F4E4BC; background: linear-gradient(135deg, #D4AF37 0%, #C0C0C0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Dashboard
+            </h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <h3>Toplam Kullanıcı</h3>
+                        <p class="stat-number"><%= istatistikler.kullaniciSayisi %></p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-info">
+                        <h3>Toplam Sipariş</h3>
+                        <p class="stat-number"><%= istatistikler.siparisSayisi %></p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">💎</div>
+                    <div class="stat-info">
+                        <h3>Toplam Ürün</h3>
+                        <p class="stat-number"><%= istatistikler.urunSayisi %></p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3>Toplam Gelir</h3>
+                        <p class="stat-number"><%= istatistikler.toplamGelir.toLocaleString('tr-TR') %> ₺</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <h3 style="font-family: 'Playfair Display', serif; color: #F4E4BC; font-weight: 600;">Hızlı İşlemler</h3>
+                <div class="actions-grid">
+                    <a href="/admin/urun/ekle" class="action-btn">
+                        <span class="action-icon">➕</span>
+                        <span>Yeni Ürün Ekle</span>
+                    </a>
+                    <a href="/admin/urunler" class="action-btn">
+                        <span class="action-icon">📋</span>
+                        <span>Ürünleri Yönet</span>
+                    </a>
+                    <a href="/admin/siparisler" class="action-btn">
+                        <span class="action-icon">📦</span>
+                        <span>Siparişleri Görüntüle</span>
+                    </a>
+                    <a href="/admin/kullanicilar" class="action-btn">
+                        <span class="action-icon">👥</span>
+                        <span>Kullanıcıları Görüntüle</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Diloşun Takı Dünyası. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+</body>
+</html>
+

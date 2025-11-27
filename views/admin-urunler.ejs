@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ürün Yönetimi - Admin Panel</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/buttons.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1>💎 Diloşun Takı Dünyası - Admin Panel</h1>
+                </div>
+                <div class="user-menu">
+                    <div class="user-info">
+                        <span class="user-name">
+                            <%= kullanici.ad ? kullanici.ad + ' ' + (kullanici.soyad || '' ) : kullanici.email %>
+                                <span class="badge-admin">Admin</span>
+                        </span>
+                        <div class="header-links">
+                            <a href="/">Ana Sayfa</a>
+                            <a href="/logout">Çıkış Yap</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="admin-nav">
+            <a href="/admin" class="nav-item">Dashboard</a>
+            <a href="/admin/urunler" class="nav-item active">Ürünler</a>
+            <a href="/admin/urun/ekle" class="nav-item">Ürün Ekle</a>
+            <a href="/admin/kullanicilar" class="nav-item">Kullanıcılar</a>
+            <a href="/admin/siparisler" class="nav-item">Siparişler</a>
+        </div>
+
+        <div class="admin-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2
+                    style="font-family: 'Playfair Display', serif; color: #F4E4BC; background: linear-gradient(135deg, #D4AF37 0%, #C0C0C0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    Ürün Yönetimi
+                </h2>
+                <a href="/admin/urun/ekle" class="btn btn-primary" style="text-decoration: none;">
+                    <span>➕</span>
+                    <span>Yeni Ürün Ekle</span>
+                </a>
+            </div>
+
+            <% if (urunler.length===0) { %>
+                <p style="color: #C0C0C0;">Henüz ürün eklenmemiş.</p>
+                <% } else { %>
+                    <div style="margin-bottom: 20px;">
+                        <input type="text" id="urun-arama" placeholder="Ürün kodu veya ürün adı ile ara..."
+                            style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(212, 175, 55, 0.3); background: rgba(26, 26, 26, 0.6); color: #F4E4BC; font-size: 1rem;">
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Ürün Kodu</th>
+                                <th>Ürün Adı</th>
+                                <th>Tür</th>
+                                <th>Materyal</th>
+                                <th>Fiyat</th>
+                                <th>Stok</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="urun-tbody">
+                            <% urunler.forEach(urun=> { %>
+                                <tr style="cursor: pointer;" onclick='showProductDetail(<%= JSON.stringify(urun) %>)'>
+                                    <td>
+                                        <%= urun.id %>
+                                    </td>
+                                    <td><span
+                                            style="font-family: 'Courier New', monospace; color: #D4AF37; font-weight: 600;">
+                                            <%= urun.urun_kodu || '-' %>
+                                        </span></td>
+                                    <td>
+                                        <%= urun.ad %>
+                                    </td>
+                                    <td>
+                                        <%= urun.tur.charAt(0).toUpperCase() + urun.tur.slice(1) %>
+                                    </td>
+                                    <td>
+                                        <%= urun.materyal.charAt(0).toUpperCase() + urun.materyal.slice(1) %>
+                                    </td>
+                                    <td>
+                                        <%= urun.fiyat.toLocaleString('tr-TR') %> ₺
+                                    </td>
+                                    <td>
+                                        <%= urun.stok %>
+                                    </td>
+                                    <td onclick="event.stopPropagation()">
+                                        <a href="/admin/urun/guncelle/<%= urun.id %>" class="btn btn-success"
+                                            style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; margin-right: 5px;">
+                                            <span>✏️</span>
+                                            <span>Güncelle</span>
+                                        </a>
+                                        <button class="btn-danger"
+                                            onclick="urunSil(<%= urun.id %>, '<%= urun.ad %>')">Sil</button>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
+                    <% } %>
+
+                        <!-- Ürün Detay Modal -->
+                        <div id="productModal"
+                            style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 10000; justify-content: center; align-items: center;"
+                            onclick="closeProductModal()">
+                            <div style="background: rgba(45, 45, 45, 0.95); backdrop-filter: blur(20px); border-radius: 20px; max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(212, 175, 55, 0.4); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);"
+                                onclick="event.stopPropagation()">
+                                <div style="padding: 30px;">
+                                    <!-- Header -->
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid rgba(212, 175, 55, 0.3);">
+                                        <h2
+                                            style="color: #F4E4BC; font-family: 'Playfair Display', serif; margin: 0; font-size: 1.8rem;">
+                                            Ürün Detayları</h2>
+                                        <button onclick="closeProductModal()"
+                                            style="background: rgba(212, 175, 55, 0.2); border: 1px solid rgba(212, 175, 55, 0.4); color: #D4AF37; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: all 0.2s;">
+                                            ✕ Kapat
+                                        </button>
+                                    </div>
+
+                                    <!-- Content -->
+                                    <div style="display: grid; gap: 25px;">
+                                        <!-- Image Section -->
+                                        <div>
+                                            <div id="modalImage"
+                                                style="width: 100%; height: 300px; background: rgba(26, 26, 26, 0.6); border-radius: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid rgba(212, 175, 55, 0.2);">
+                                                <span style="font-size: 4rem; color: rgba(212, 175, 55, 0.3);">💎</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Product Info -->
+                                        <div>
+                                            <div
+                                                style="background: rgba(26, 26, 26, 0.4); padding: 20px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                                                <div
+                                                    style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                                                    <div>
+                                                        <div
+                                                            style="color: #D4AF37; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">
+                                                            Ürün Kodu</div>
+                                                        <div id="modalCode"
+                                                            style="color: #F4E4BC; font-family: 'Courier New', monospace; font-size: 1.1rem; font-weight: 600;">
+                                                            -</div>
+                                                    </div>
+                                                    <div>
+                                                        <div
+                                                            style="color: #D4AF37; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">
+                                                            Ürün Adı</div>
+                                                        <div id="modalName" style="color: #F4E4BC; font-size: 1.1rem;">-
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div
+                                                            style="color: #D4AF37; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">
+                                                            Tür</div>
+                                                        <div id="modalType" style="color: #F4E4BC;">-</div>
+                                                    </div>
+                                                    <div>
+                                                        <div
+                                                            style="color: #D4AF37; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">
+                                                            Materyal</div>
+                                                        <div id="modalMaterial" style="color: #F4E4BC;">-</div>
+                                                    </div>
+                                                    <div>
+                                                        <div
+                                                            style="color: #D4AF37; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">
+                                                            Fiyat</div>
+                                                        <div id="modalPrice"
+                                                            style="color: #D4AF37; font-size: 1.3rem; font-weight: 700; font-family: 'Playfair Display', serif;">
+                                                            -</div>
+                                                    </div>
+                                                    <div>
+                                                        <div
+                                                            style="color: #D4AF37; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">
+                                                            Stok</div>
+                                                        <div id="modalStock" style="color: #F4E4BC;">-</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Description -->
+                                        <div id="modalDescriptionContainer" style="display: none;">
+                                            <div
+                                                style="background: rgba(26, 26, 26, 0.4); padding: 20px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                                                <div
+                                                    style="color: #D4AF37; font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;">
+                                                    Açıklama</div>
+                                                <div id="modalDescription" style="color: #C0C0C0; line-height: 1.6;">-
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Diloşun Takı Dünyası. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Ürün detay modalını göster
+        function showProductDetail(urun) {
+            const modal = document.getElementById('productModal');
+
+            // Görsel
+            const modalImage = document.getElementById('modalImage');
+            if (urun.resim) {
+                modalImage.innerHTML = `<img src="${urun.resim}" alt="${urun.ad}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.innerHTML='<span style=\\'font-size: 4rem; color: rgba(212, 175, 55, 0.3);\\'>💎</span>'">`;
+            } else {
+                modalImage.innerHTML = '<span style="font-size: 4rem; color: rgba(212, 175, 55, 0.3);">💎</span>';
+            }
+
+            // Bilgiler
+            document.getElementById('modalCode').textContent = urun.urun_kodu || '-';
+            document.getElementById('modalName').textContent = urun.ad;
+            document.getElementById('modalType').textContent = urun.tur.charAt(0).toUpperCase() + urun.tur.slice(1);
+            document.getElementById('modalMaterial').textContent = urun.materyal.charAt(0).toUpperCase() + urun.materyal.slice(1);
+            document.getElementById('modalPrice').textContent = urun.fiyat.toLocaleString('tr-TR') + ' ₺';
+            document.getElementById('modalStock').textContent = urun.stok + ' adet';
+
+            // Açıklama
+            const descContainer = document.getElementById('modalDescriptionContainer');
+            const descText = document.getElementById('modalDescription');
+            if (urun.aciklama) {
+                descText.textContent = urun.aciklama;
+                descContainer.style.display = 'block';
+            } else {
+                descContainer.style.display = 'none';
+            }
+
+            // Modalı göster
+            modal.style.display = 'flex';
+        }
+
+        // Modalı kapat
+        function closeProductModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        // ESC tuşu ile kapat
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeProductModal();
+            }
+        });
+
+        // Ürün arama fonksiyonu
+        const aramaInput = document.getElementById('urun-arama');
+        const urunTbody = document.getElementById('urun-tbody');
+        let aramaTimeout;
+
+        if (aramaInput) {
+            aramaInput.addEventListener('input', (e) => {
+                clearTimeout(aramaTimeout);
+                const query = e.target.value.trim();
+
+                if (!query) {
+                    // Boşsa sayfayı yenile
+                    location.reload();
+                    return;
+                }
+
+                aramaTimeout = setTimeout(() => {
+                    fetch(`/api/admin/urun/ara?q=${encodeURIComponent(query)}`)
+                        .then(res => res.json())
+                        .then(urunler => {
+                            if (urunler.length === 0) {
+                                urunTbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #C0C0C0;">Sonuç bulunamadı.</td></tr>';
+                                return;
+                            }
+
+                            urunTbody.innerHTML = urunler.map(urun => `
+                                <tr style="cursor: pointer;" onclick='showProductDetail(${JSON.stringify(urun)})'>
+                                    <td>${urun.id}</td>
+                                    <td><span style="font-family: 'Courier New', monospace; color: #D4AF37; font-weight: 600;">${urun.urun_kodu || '-'}</span></td>
+                                    <td>${urun.ad}</td>
+                                    <td>${urun.tur.charAt(0).toUpperCase() + urun.tur.slice(1)}</td>
+                                    <td>${urun.materyal.charAt(0).toUpperCase() + urun.materyal.slice(1)}</td>
+                                    <td>${urun.fiyat.toLocaleString('tr-TR')} ₺</td>
+                                    <td>${urun.stok}</td>
+                                    <td onclick="event.stopPropagation()">
+                                        <a href="/admin/urun/guncelle/${urun.id}" class="btn btn-success" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; margin-right: 5px;">
+                                            <span>✏️</span>
+                                            <span>Güncelle</span>
+                                        </a>
+                                        <button class="btn-danger" onclick="urunSil(${urun.id}, '${urun.ad}')">Sil</button>
+                                    </td>
+                                </tr>
+                            `).join('');
+                        })
+                        .catch(err => {
+                            console.error('Arama hatası:', err);
+                        });
+                }, 300);
+            });
+        }
+
+        function urunSil(urunId, urunAd) {
+            if (!confirm(`"${urunAd}" adlı ürünü silmek istediğinize emin misiniz?`)) {
+                return;
+            }
+
+            fetch('/admin/urun/sil', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    urun_id: urunId
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Ürün silindi.');
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Ürün silinemedi.');
+                    }
+                })
+                .catch(err => {
+                    console.error('Hata:', err);
+                    alert('Bir hata oluştu.');
+                });
+        }
+    </script>
+</body>
+
+</html>

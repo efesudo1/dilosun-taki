@@ -1,0 +1,79 @@
+const express = require('express');
+const path = require('path');
+const os = require('os');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const bcrypt = require('bcrypt');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
+
+// Middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(express.static('public'));
+
+// Session yönetimi
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'taki-websitesi-secret-key-2024',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000
+    }
+}));
+
+// EJS template engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// ========== DATABASE SETUP ==========
+let db;
+
+// PostgreSQL kullan eğer DATABASE_URL varsa, yoksa SQLite
+if (process.env.DATABASE_URL) {
+    // PostgreSQL
+    const { Pool } = require('pg');
+    db = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    });
+    console.log('PostgreSQL veritabanına bağlanıldı.');
+} else {
+    // SQLite (local development)
+    const sqlite3 = require('sqlite3').verbose();
+    const dbPath = path.join(__dirname, 'taki.db');
+    db = new sqlite3.Database(dbPath, (err) => {
+        if (err) {
+            console.error('SQLite bağlantı hatası:', err.message);
+        } else {
+            console.log('SQLite veritabanına bağlandı.');
+            db.run('PRAGMA foreign_keys = ON');
+        }
+    });
+}
+
+// TODO: Buraya routing kodlarınızı ekleyin
+// Bu sadece bir başlangıç şablonu
+
+app.get('/', (req, res) => {
+    res.send(`
+        <h1>Diloşun Takı Dünyası</h1>
+        <p>Database: ${process.env.DATABASE_URL ? 'PostgreSQL' : 'SQLite'}</p>
+        <p>Environment: ${process.env.NODE_ENV || 'development'}</p>
+    `);
+});
+
+// Sunucuyu başlat
+app.listen(PORT, HOST, () => {
+    console.log('='.repeat(50));
+    console.log('🚀 Sunucu başarıyla başlatıldı!');
+    console.log('='.repeat(50));
+    console.log(`📍 Port: ${PORT}`);
+    console.log(`🗄️  Database: ${process.env.DATABASE_URL ? 'PostgreSQL' : 'SQLite'}`);
+    console.log('='.repeat(50));
+});

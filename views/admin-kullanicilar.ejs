@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcılar - Admin Panel</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/buttons.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1>💎 Diloşun Takı Dünyası - Admin Panel</h1>
+                </div>
+                <div class="user-menu">
+                    <div class="user-info">
+                        <span class="user-name">
+                            <%= kullanici.ad ? kullanici.ad + ' ' + (kullanici.soyad || '') : kullanici.email %>
+                            <span class="badge-admin">Admin</span>
+                        </span>
+                        <div class="header-links">
+                            <a href="/">Ana Sayfa</a>
+                            <a href="/logout">Çıkış Yap</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="admin-nav">
+            <a href="/admin" class="nav-item">Dashboard</a>
+            <a href="/admin/urunler" class="nav-item">Ürünler</a>
+            <a href="/admin/urun/ekle" class="nav-item">Ürün Ekle</a>
+            <a href="/admin/kullanicilar" class="nav-item active">Kullanıcılar</a>
+            <a href="/admin/siparisler" class="nav-item">Siparişler</a>
+        </div>
+
+        <div class="admin-content">
+            <h2 style="font-family: 'Playfair Display', serif; color: #F4E4BC; background: linear-gradient(135deg, #D4AF37 0%, #C0C0C0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Kullanıcılar
+            </h2>
+            <p style="margin-bottom: 20px; color: #C0C0C0;">Toplam <%= kullanicilar.length %> kullanıcı</p>
+
+            <% if (kullanicilar.length === 0) { %>
+                <p style="color: #C0C0C0;">Henüz kullanıcı yok.</p>
+            <% } else { %>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>E-posta</th>
+                            <th>Ad</th>
+                            <th>Soyad</th>
+                            <th>Rol</th>
+                            <th>Kayıt Tarihi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% kullanicilar.forEach(k => { %>
+                            <tr>
+                                <td><%= k.id %></td>
+                                <td><%= k.email %></td>
+                                <td><%= k.ad || '-' %></td>
+                                <td><%= k.soyad || '-' %></td>
+                                <td>
+                                    <% if (k.rol === 'admin') { %>
+                                        <span class="status-badge" style="background: #fff3cd; color: #856404;">Admin</span>
+                                    <% } else { %>
+                                        <span class="status-badge" style="background: #d4edda; color: #155724;">Müşteri</span>
+                                    <% } %>
+                                </td>
+                                <td><%= new Date(k.olusturma_tarihi).toLocaleDateString('tr-TR') %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } %>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Diloşun Takı Dünyası. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+</body>
+</html>
+
