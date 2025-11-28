@@ -21,9 +21,9 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: process.env.NODE_ENV === 'production', // Production'da HTTPS için true
+        secure: false, // Localhost'ta çalışması için false yapıyoruz
         httpOnly: true,
-        sameSite: 'lax', // Cross-site istekler için
+        sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000 // 24 saat
     }
 }));
@@ -122,8 +122,8 @@ app.post('/login', (req, res) => {
         }
 
         console.log(`Kullanıcı bulundu: ${kullanici.email}, Rol: ${kullanici.rol}`);
-        console.log(`DB Şifre Hash: ${kullanici.sifre}`);
-        console.log(`Girilen Şifre: ${sifre}`);
+        // console.log(`DB Şifre Hash: ${kullanici.sifre}`); // Güvenlik için logu kapattım
+        // console.log(`Girilen Şifre: ${sifre}`);
 
         // Şifre kontrolü
         bcrypt.compare(sifre, kullanici.sifre, (err, match) => {
@@ -135,7 +135,7 @@ app.post('/login', (req, res) => {
             console.log(`Şifre eşleşmesi: ${match}`);
 
             if (match) {
-                console.log('Giriş başarılı!');
+                console.log('Giriş başarılı! Session oluşturuluyor...');
                 // Session'a kullanıcı bilgilerini kaydet
                 req.session.kullanici = {
                     id: kullanici.id,
@@ -144,7 +144,16 @@ app.post('/login', (req, res) => {
                     ad: kullanici.ad,
                     soyad: kullanici.soyad
                 };
-                res.redirect('/');
+
+                // Session'ı kaydet ve sonra yönlendir
+                req.session.save((err) => {
+                    if (err) {
+                        console.error('Session kaydetme hatası:', err);
+                        return res.render('login', { hata: 'Giriş yapılırken bir hata oluştu.' });
+                    }
+                    console.log('Session kaydedildi, yönlendiriliyor...');
+                    res.redirect('/');
+                });
             } else {
                 console.log('Şifre yanlış!');
                 res.render('login', { hata: 'E-posta veya şifre hatalı.' });
@@ -215,7 +224,9 @@ app.post('/register', (req, res) => {
                         soyad: soyad || null
                     };
 
-                    res.redirect('/');
+                    req.session.save(() => {
+                        res.redirect('/');
+                    });
                 }
             );
         });
@@ -446,7 +457,7 @@ app.post('/admin/kullanicilar/reset', requireAuth, requireAdmin, (req, res) => {
                 return res.json({ success: false, message: 'Admin oluşturulamadı.' });
             }
 
-            db.run('INSERT INTO kullanıcılar (email, sifre, rol, ad, soyad) VALUES (?, ?, ?, ?, ?)',
+            db.run('INSERT INTO kullanicilar (email, sifre, rol, ad, soyad) VALUES (?, ?, ?, ?, ?)',
                 [adminEmail, hash, 'admin', 'Admin', 'Kullanıcı'],
                 function (err) {
                     if (err) {
@@ -496,7 +507,7 @@ app.get('/admin/siparis/:id', requireAuth, requireAdmin, (req, res) => {
 
     db.get(`SELECT s.*, k.email, k.ad, k.soyad
             FROM siparisler s
-            JOIN kullanıcılar k ON s.kullanici_id = k.id
+            JOIN kullanicilar k ON s.kullanici_id = k.id
             WHERE s.id = ?`, [siparis_id], (err, siparis) => {
         if (err || !siparis) {
             return res.status(404).send('Sipariş bulunamadı.');
@@ -731,4 +742,3 @@ process.on('SIGINT', () => {
         process.exit(0);
     });
 });
-
