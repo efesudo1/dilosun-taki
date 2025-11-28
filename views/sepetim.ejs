@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= siteAdi %> - Kod Sepetim
+    </title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/buttons.css">
+    <style>
+        .code-list-container {
+            background: rgba(45, 45, 45, 0.4);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .code-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .code-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #F4E4BC;
+        }
+
+        .code-item:last-child {
+            border-bottom: none;
+        }
+
+        .code-text {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #D4AF37;
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: flex-end;
+        }
+
+        .copy-area {
+            width: 100%;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: monospace;
+            resize: none;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/header') %>
+
+        <main class="container">
+            <h2 class="section-title">Kod Sepetim 🛍️</h2>
+
+            <% if (sepet.length===0) { %>
+                <div class="empty-state" style="text-align: center; padding: 50px; color: #999;">
+                    <i>📝</i>
+                    <p>Sepetinizde henüz ürün kodu yok.</p>
+                    <a href="/" class="btn btn-primary" style="margin-top: 15px;">Ürün Kodlarını Topla</a>
+                </div>
+                <% } else { %>
+                    <div class="code-list-container">
+                        <p>Aşağıdaki ürün kodlarını topladınız. Hepsini kopyalayabilir veya doğrudan sipariş
+                            oluşturabilirsiniz.</p>
+
+                        <ul class="code-list">
+                            <% sepet.forEach(item=> { %>
+                                <li class="code-item">
+                                    <div>
+                                        <span class="code-text">
+                                            <%= item.urun_kodu %>
+                                        </span>
+                                        <span style="margin-left: 10px; opacity: 0.7;">- <%= item.urun_ad %></span>
+                                    </div>
+                                </li>
+                                <% }); %>
+                        </ul>
+
+                        <!-- Toplu Kopyalama Alanı -->
+                        <textarea class="copy-area" readonly id="allCodes"><% sepet.forEach(item => { %><%= item.urun_kodu %>
+<% }); %></textarea>
+
+                        <div class="actions-bar">
+                            <button onclick="copyAllCodes()" class="btn btn-secondary">
+                                📋 Tümünü Kopyala
+                            </button>
+                            <button onclick="clearCart()" class="btn btn-danger"
+                                style="background: rgba(255, 50, 50, 0.2); color: #ff6b6b; border: 1px solid #ff6b6b;">
+                                🗑️ Temizle
+                            </button>
+                            <button onclick="sendOrder()" class="btn btn-primary">
+                                🚀 Admin'e Gönder (Sipariş Oluştur)
+                            </button>
+                        </div>
+                    </div>
+                    <% } %>
+        </main>
+
+        <%- include('partials/footer') %>
+
+            <script>
+                function copyAllCodes() {
+                    const copyText = document.getElementById("allCodes");
+                    copyText.select();
+                    copyText.setSelectionRange(0, 99999);
+                    navigator.clipboard.writeText(copyText.value)
+                        .then(() => alert('Tüm kodlar kopyalandı!'))
+                        .catch(err => console.error('Kopyalama hatası:', err));
+                }
+
+                function clearCart() {
+                    if (confirm('Sepeti temizlemek istediğinize emin misiniz?')) {
+                        fetch('/api/sepet/temizle', { method: 'POST' })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) location.reload();
+                            });
+                    }
+                }
+
+                function sendOrder() {
+                    if (confirm('Bu kod listesini sipariş olarak göndermek istiyor musunuz?')) {
+                        fetch('/siparis/olustur', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ notlar: document.getElementById("allCodes").value })
+                        })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert(data.message);
+                                    window.location.href = '/siparislerim';
+                                } else {
+                                    alert('Hata: ' + data.message);
+                                }
+                            });
+                    }
+                }
+            </script>
+</body>
+
+</html>

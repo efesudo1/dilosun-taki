@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= siteAdi %> - Favorilerim
+    </title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/buttons.css">
+    <style>
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/header') %>
+
+        <main class="container">
+            <h2 class="section-title">Favorilerim ❤️</h2>
+
+            <% if (urunler.length===0) { %>
+                <div class="empty-state">
+                    <i>💔</i>
+                    <p>Henüz favori ürününüz yok.</p>
+                    <a href="/" class="btn btn-primary" style="margin-top: 15px;">Ürünleri Keşfet</a>
+                </div>
+                <% } else { %>
+                    <div class="favorites-grid">
+                        <% urunler.forEach(urun=> { %>
+                            <div class="product-card">
+                                <div class="product-image">
+                                    <img src="<%= urun.resim || 'https://via.placeholder.com/300x300?text=Resim+Yok' %>"
+                                        alt="<%= urun.ad %>">
+                                    <% if (urun.stok <=0) { %>
+                                        <div class="out-of-stock-badge">Tükendi</div>
+                                        <% } %>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-category">
+                                        <%= urun.tur.toUpperCase() %>
+                                    </div>
+                                    <h3 class="product-title">
+                                        <%= urun.ad %>
+                                    </h3>
+                                    <div class="product-code">
+                                        <%= urun.urun_kodu %>
+                                    </div>
+                                    <div class="product-price">
+                                        <%= urun.fiyat.toLocaleString('tr-TR') %> ₺
+                                    </div>
+
+                                    <div class="product-actions">
+                                        <button onclick="toggleFavori(<%= urun.id %>, this)" class="btn-icon active"
+                                            title="Favorilerden Çıkar">
+                                            ❤️
+                                        </button>
+                                        <button
+                                            onclick="koduKopyalaVeEkle('<%= urun.urun_kodu %>', <%= urun.id %>, '<%= urun.ad %>')"
+                                            class="btn btn-primary btn-sm">
+                                            Kodu Ekle
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }); %>
+                    </div>
+                    <% } %>
+        </main>
+
+        <%- include('partials/footer') %>
+
+            <script src="/js/main.js"></script>
+</body>
+
+</html>

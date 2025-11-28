@@ -957,3 +957,46 @@ footer::before {
     opacity: 0.3;
     color: var(--gold);
 }
+/* Favori Butonu */
+.fav-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+    opacity: 0.7;
+    filter: grayscale(100%);
+}
+
+.fav-btn:hover {
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+.fav-btn.active {
+    filter: grayscale(0%);
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+/* Sepetim Sayfasý */
+.code-list-container {
+    background: rgba(45, 45, 45, 0.4);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 30px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+

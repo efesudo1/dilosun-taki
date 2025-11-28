@@ -268,27 +268,160 @@ app.get('/', (req, res) => {
             return;
         }
 
-        // İstatistikler için sorgular
-        db.all('SELECT DISTINCT tur FROM urunler', [], (err, turler) => {
-            if (err) {
-                console.error('Tür sorgusu hatası:', err.message);
-            }
-
-            db.all('SELECT DISTINCT materyal FROM urunler', [], (err, materyaller) => {
-                if (err) {
-                    console.error('Materyal sorgusu hatası:', err.message);
+        // Kullanıcının favorilerini çek
+        let favoriUrunIds = [];
+        if (req.session.kullanici) {
+            db.all('SELECT urun_id FROM favoriler WHERE kullanici_id = ?', [req.session.kullanici.id], (err, favs) => {
+                if (!err && favs) {
+                    favoriUrunIds = favs.map(f => f.urun_id);
                 }
+                renderPage(rows, favoriUrunIds);
+            });
+        } else {
+            renderPage(rows, []);
+        }
 
-                res.render('index', {
-                    urunler: rows,
-                    turler: turler || [],
-                    materyaller: materyaller || [],
-                    seciliTur: tur || 'tumu',
-                    seciliMateryal: materyal || 'tumu',
-                    kullanici: req.session.kullanici || null
+        function renderPage(urunler, favoriler) {
+            // İstatistikler için sorgular
+            db.all('SELECT DISTINCT tur FROM urunler', [], (err, turler) => {
+                db.all('SELECT DISTINCT materyal FROM urunler', [], (err, materyaller) => {
+                    res.render('index', {
+                        siteAdi: 'Ayris Bijou',
+                        urunler: urunler,
+                        turler: turler || [],
+                        materyaller: materyaller || [],
+                        seciliTur: tur || 'tumu',
+                        seciliMateryal: materyal || 'tumu',
+                        kullanici: req.session.kullanici || null,
+                        favoriler: favoriler
+                    });
                 });
             });
+        }
+    });
+});
+
+// ========== FAVORİLER ==========
+
+// Favori Ekle/Çıkar (Toggle)
+app.post('/api/favori/toggle', requireAuth, (req, res) => {
+    const { urun_id } = req.body;
+    const kullanici_id = req.session.kullanici.id;
+
+    db.get('SELECT id FROM favoriler WHERE kullanici_id = ? AND urun_id = ?', [kullanici_id, urun_id], (err, row) => {
+        if (err) return res.json({ success: false });
+
+        if (row) {
+            // Favoriden çıkar
+            db.run('DELETE FROM favoriler WHERE id = ?', [row.id], (err) => {
+                res.json({ success: true, islem: 'cikarildi' });
+            });
+        } else {
+            // Favoriye ekle
+            db.run('INSERT INTO favoriler (kullanici_id, urun_id) VALUES (?, ?)', [kullanici_id, urun_id], (err) => {
+                res.json({ success: true, islem: 'eklendi' });
+            });
+        }
+    });
+});
+
+// Favorilerim Sayfası
+app.get('/favorilerim', requireAuth, (req, res) => {
+    const kullanici_id = req.session.kullanici.id;
+
+    db.all(`SELECT u.* 
+            FROM urunler u 
+            JOIN favoriler f ON u.id = f.urun_id 
+            WHERE f.kullanici_id = ? 
+            ORDER BY f.olusturma_tarihi DESC`,
+        [kullanici_id], (err, urunler) => {
+
+            res.render('favorilerim', {
+                siteAdi: 'Ayris Bijou',
+                kullanici: req.session.kullanici,
+                urunler: urunler || []
+            });
         });
+});
+
+// ========== SEPET (KOD LİSTESİ) ==========
+
+// Sepete Ekle (Session tabanlı)
+app.post('/api/sepet/ekle', (req, res) => {
+    const { urun_id, urun_kodu, urun_ad } = req.body;
+
+    if (!req.session.sepet) {
+        req.session.sepet = [];
+    }
+
+    // Zaten var mı kontrol et
+    const varMi = req.session.sepet.find(item => item.urun_id == urun_id);
+    if (!varMi) {
+        req.session.sepet.push({ urun_id, urun_kodu, urun_ad, adet: 1 });
+    }
+
+    req.session.save(() => {
+        res.json({ success: true, sepetSayisi: req.session.sepet.length });
+    });
+});
+
+// Sepetim Sayfası
+app.get('/sepetim', (req, res) => {
+    const sepet = req.session.sepet || [];
+    res.render('sepetim', {
+        siteAdi: 'Ayris Bijou',
+        kullanici: req.session.kullanici,
+        sepet: sepet
+    });
+});
+
+// Sepeti Temizle
+app.post('/api/sepet/temizle', (req, res) => {
+    req.session.sepet = [];
+    req.session.save(() => {
+        res.json({ success: true });
+    });
+});
+
+// Sepeti Admin'e Gönder (Sipariş Oluştur)
+app.post('/siparis/olustur', requireAuth, (req, res) => {
+    const sepet = req.session.sepet || [];
+
+    if (sepet.length === 0) {
+        return res.json({ success: false, message: 'Sepetiniz boş.' });
+    }
+
+    const kullanici_id = req.session.kullanici.id;
+    const notlar = req.body.notlar || 'Kod listesi gönderildi.';
+
+    // Toplam tutarı hesapla (Veritabanından güncel fiyatları almak daha güvenli ama şimdilik basit tutuyoruz)
+    // Gerçek senaryoda fiyatları DB'den tekrar çekmeliyiz.
+    // Şimdilik fiyatı 0 geçiyoruz çünkü amaç kodları göndermek.
+
+    db.serialize(() => {
+        db.run('INSERT INTO siparisler (kullanici_id, toplam_tutar, notlar) VALUES (?, ?, ?)',
+            [kullanici_id, 0, notlar],
+            function (err) {
+                if (err) {
+                    return res.json({ success: false, message: 'Sipariş oluşturulamadı.' });
+                }
+
+                const siparis_id = this.lastID;
+                const stmt = db.prepare('INSERT INTO siparis_detaylari (siparis_id, urun_id, adet, birim_fiyat) VALUES (?, ?, ?, ?)');
+
+                sepet.forEach(item => {
+                    stmt.run(siparis_id, item.urun_id, 1, 0); // Fiyat 0, adet 1
+                });
+
+                stmt.finalize(() => {
+                    // Sepeti temizle
+                    req.session.sepet = [];
+                    req.session.save(() => {
+                        res.json({ success: true, message: 'Ürün kodları başarıyla gönderildi!' });
+                    });
+                });
+            }
+        );
     });
 });
 
@@ -408,14 +541,24 @@ app.get('/admin', requireAuth, requireAdmin, (req, res) => {
             db.get('SELECT COUNT(*) as count FROM urunler', [], (err, urunSayisi) => {
                 // Toplam gelir
                 db.get('SELECT SUM(toplam_tutar) as toplam FROM siparisler WHERE durum = "tamamlandi"', [], (err, gelir) => {
-                    res.render('admin', {
-                        kullanici: req.session.kullanici,
-                        istatistikler: {
-                            kullaniciSayisi: kullaniciSayisi?.count || 0,
-                            siparisSayisi: siparisSayisi?.count || 0,
-                            urunSayisi: urunSayisi?.count || 0,
-                            toplamGelir: gelir?.toplam || 0
-                        }
+                    // En çok favorilenen ürün
+                    db.get(`SELECT u.ad, COUNT(f.id) as fav_sayisi 
+                            FROM favoriler f 
+                            JOIN urunler u ON f.urun_id = u.id 
+                            GROUP BY f.urun_id 
+                            ORDER BY fav_sayisi DESC 
+                            LIMIT 1`, [], (err, enPopuler) => {
+
+                        res.render('admin', {
+                            kullanici: req.session.kullanici,
+                            istatistikler: {
+                                kullaniciSayisi: kullaniciSayisi?.count || 0,
+                                siparisSayisi: siparisSayisi?.count || 0,
+                                urunSayisi: urunSayisi?.count || 0,
+                                toplamGelir: gelir?.toplam || 0,
+                                enPopuler: enPopuler || null
+                            }
+                        });
                     });
                 });
             });
