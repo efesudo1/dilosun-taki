@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="/css/admin.css">
     <link rel="stylesheet" href="/css/buttons.css">
 </head>
+
 <body>
     <header>
         <div class="container">
@@ -18,8 +20,8 @@
                 <div class="user-menu">
                     <div class="user-info">
                         <span class="user-name">
-                            <%= kullanici.ad ? kullanici.ad + ' ' + (kullanici.soyad || '') : kullanici.email %>
-                            <span class="badge-admin">Admin</span>
+                            <%= kullanici.ad ? kullanici.ad + ' ' + (kullanici.soyad || '' ) : kullanici.email %>
+                                <span class="badge-admin">Admin</span>
                         </span>
                         <div class="header-links">
                             <a href="/">Ana Sayfa</a>
@@ -41,61 +43,68 @@
         </div>
 
         <div class="admin-content">
-            <h2 style="font-family: 'Playfair Display', serif; color: #F4E4BC; background: linear-gradient(135deg, #D4AF37 0%, #C0C0C0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+            <h2
+                style="font-family: 'Playfair Display', serif; color: #F4E4BC; background: linear-gradient(135deg, #D4AF37 0%, #C0C0C0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                 Siparişler
             </h2>
             <p style="margin-bottom: 20px; color: #C0C0C0;">Toplam <%= siparisler.length %> sipariş</p>
 
-            <% if (siparisler.length === 0) { %>
+            <% if (siparisler.length===0) { %>
                 <p style="color: #C0C0C0;">Henüz sipariş yok.</p>
-            <% } else { %>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Müşteri</th>
-                            <th>Toplam Tutar</th>
-                            <th>Durum</th>
-                            <th>Tarih</th>
-                            <th>İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% siparisler.forEach(s => { %>
+                <% } else { %>
+                    <table class="data-table">
+                        <thead>
                             <tr>
-                                <td><%= s.id %></td>
-                                <td>
-                                    <%= s.ad ? s.ad + ' ' + (s.soyad || '') : s.email %>
-                                    <br><small style="color: #666;"><%= s.email %></small>
-                                </td>
-                                <td><%= s.toplam_tutar.toLocaleString('tr-TR') %> ₺</td>
-                                <td>
-                                    <% 
-                                        const durumMap = {
-                                            'beklemede': 'Onay Bekliyor',
-                                            'onaylandi': 'Sipariş Onaylandı',
-                                            'hazirlaniyor': 'Hazırlanıyor',
-                                            'kargoda': 'Yola Çıktı',
-                                            'tamamlandi': 'Teslim Edildi',
-                                            'iptal': 'İptal'
-                                        };
-                                    %>
-                                    <span class="status-badge status-<%= s.durum %>">
-                                        <%= durumMap[s.durum] || s.durum %>
-                                    </span>
-                                </td>
-                                <td><%= new Date(s.olusturma_tarihi).toLocaleDateString('tr-TR') %></td>
-                                <td>
-                                    <a href="/admin/siparis/<%= s.id %>" class="btn btn-success" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-                                        <span>👁️</span>
-                                        <span>Detay</span>
-                                    </a>
-                                </td>
+                                <th>ID</th>
+                                <th>Müşteri</th>
+                                <th>Telefon</th>
+                                <th>Toplam Tutar</th>
+                                <th>Durum</th>
+                                <th>Tarih</th>
+                                <th>İşlemler</th>
                             </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-            <% } %>
+                        </thead>
+                        <tbody>
+                            <% siparisler.forEach(s=> { %>
+                                <tr>
+                                    <td>
+                                        <%= s.id %>
+                                    </td>
+                                    <td>
+                                        <%= s.ad ? s.ad + ' ' + (s.soyad || '' ) : s.email %>
+                                            <br><small style="color: #666;">
+                                                <%= s.email %>
+                                            </small>
+                                    </td>
+                                    <td>
+                                        <%= s.telefon || '-' %>
+                                    </td>
+                                    <td>
+                                        <%= s.toplam_tutar.toLocaleString('tr-TR') %> ₺
+                                    </td>
+                                    <td>
+                                        <% const durumMap={ 'beklemede' : 'Onay Bekliyor' , 'onaylandi'
+                                            : 'Sipariş Onaylandı' , 'hazirlaniyor' : 'Hazırlanıyor' , 'kargoda'
+                                            : 'Yola Çıktı' , 'tamamlandi' : 'Teslim Edildi' , 'iptal' : 'İptal' }; %>
+                                            <span class="status-badge status-<%= s.durum %>">
+                                                <%= durumMap[s.durum] || s.durum %>
+                                            </span>
+                                    </td>
+                                    <td>
+                                        <%= new Date(s.olusturma_tarihi).toLocaleDateString('tr-TR') %>
+                                    </td>
+                                    <td>
+                                        <a href="/admin/siparis/<%= s.id %>" class="btn btn-success"
+                                            style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                            <span>👁️</span>
+                                            <span>Detay</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
+                    <% } %>
         </div>
     </main>
 
@@ -105,5 +114,5 @@
         </div>
     </footer>
 </body>
-</html>
 
+</html>

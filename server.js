@@ -348,7 +348,7 @@ app.get('/favorilerim', requireAuth, (req, res) => {
 
 // Sepete Ekle (Session tabanlı)
 app.post('/api/sepet/ekle', (req, res) => {
-    const { urun_id, urun_kodu, urun_ad } = req.body;
+    const { urun_id, urun_kodu, urun_ad, fiyat } = req.body;
 
     if (!req.session.sepet) {
         req.session.sepet = [];
@@ -357,21 +357,37 @@ app.post('/api/sepet/ekle', (req, res) => {
     // Zaten var mı kontrol et
     const varMi = req.session.sepet.find(item => item.urun_id == urun_id);
     if (!varMi) {
-        req.session.sepet.push({ urun_id, urun_kodu, urun_ad, adet: 1 });
+        req.session.sepet.push({
+            urun_id,
+            urun_kodu,
+            urun_ad,
+            fiyat: parseFloat(fiyat) || 0,
+            adet: 1
+        });
     }
 
+    // Toplam fiyatı ve ürün sayısını hesapla
+    const toplamFiyat = req.session.sepet.reduce((acc, item) => acc + (item.fiyat * item.adet), 0);
+
     req.session.save(() => {
-        res.json({ success: true, sepetSayisi: req.session.sepet.length });
+        res.json({
+            success: true,
+            sepetSayisi: req.session.sepet.length,
+            toplamFiyat: toplamFiyat
+        });
     });
 });
 
 // Sepetim Sayfası
 app.get('/sepetim', (req, res) => {
     const sepet = req.session.sepet || [];
+    const toplamFiyat = sepet.reduce((acc, item) => acc + (item.fiyat * item.adet), 0);
+
     res.render('sepetim', {
         siteAdi: 'Ayris Bijou',
         kullanici: req.session.kullanici,
-        sepet: sepet
+        sepet: sepet,
+        toplamFiyat: toplamFiyat
     });
 });
 
@@ -393,16 +409,17 @@ app.post('/siparis/olustur', requireAuth, (req, res) => {
 
     const kullanici_id = req.session.kullanici.id;
     const notlar = req.body.notlar || 'Kod listesi gönderildi.';
+    const telefon = req.body.telefon || '';
 
-    // Toplam tutarı hesapla (Veritabanından güncel fiyatları almak daha güvenli ama şimdilik basit tutuyoruz)
-    // Gerçek senaryoda fiyatları DB'den tekrar çekmeliyiz.
-    // Şimdilik fiyatı 0 geçiyoruz çünkü amaç kodları göndermek.
+    // Toplam tutarı hesapla
+    const toplam_tutar = sepet.reduce((acc, item) => acc + (item.fiyat * item.adet), 0);
 
     db.serialize(() => {
-        db.run('INSERT INTO siparisler (kullanici_id, toplam_tutar, notlar) VALUES (?, ?, ?)',
-            [kullanici_id, 0, notlar],
+        db.run('INSERT INTO siparisler (kullanici_id, toplam_tutar, notlar, telefon) VALUES (?, ?, ?, ?)',
+            [kullanici_id, toplam_tutar, notlar, telefon],
             function (err) {
                 if (err) {
+                    console.error('Sipariş oluşturma hatası:', err);
                     return res.json({ success: false, message: 'Sipariş oluşturulamadı.' });
                 }
 
@@ -410,14 +427,14 @@ app.post('/siparis/olustur', requireAuth, (req, res) => {
                 const stmt = db.prepare('INSERT INTO siparis_detaylari (siparis_id, urun_id, adet, birim_fiyat) VALUES (?, ?, ?, ?)');
 
                 sepet.forEach(item => {
-                    stmt.run(siparis_id, item.urun_id, 1, 0); // Fiyat 0, adet 1
+                    stmt.run(siparis_id, item.urun_id, 1, item.fiyat);
                 });
 
                 stmt.finalize(() => {
                     // Sepeti temizle
                     req.session.sepet = [];
                     req.session.save(() => {
-                        res.json({ success: true, message: 'Ürün kodları başarıyla gönderildi!' });
+                        res.json({ success: true, message: 'Siparişiniz başarıyla oluşturuldu!' });
                     });
                 });
             }
