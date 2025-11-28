@@ -32,7 +32,7 @@ function toggleFavori(urunId, btn) {
 }
 
 // Kodu Kopyala ve Sepete Ekle
-function koduKopyalaVeEkle(kod, id, ad) {
+function koduKopyalaVeEkle(kod, id, ad, btn) {
     // 1. Kopyala
     navigator.clipboard.writeText(kod).then(() => {
         // 2. Sepete Ekle (Backend'e bildir)
@@ -45,7 +45,6 @@ function koduKopyalaVeEkle(kod, id, ad) {
             .then(data => {
                 if (data.success) {
                     // Bildirim göster
-                    const btn = event.target;
                     const originalText = btn.innerText;
                     btn.innerText = '✅ Eklendi';
                     btn.style.background = 'rgba(40, 167, 69, 0.3)';

@@ -130,7 +130,7 @@
                                             <%= urun.urun_kodu %>
                                         </span>
                                         <button
-                                            onclick="koduKopyalaVeEkle('<%= urun.urun_kodu %>', <%= urun.id %>, '<%= urun.ad %>')"
+                                            onclick="koduKopyalaVeEkle('<%= urun.urun_kodu %>', <%= urun.id %>, '<%= urun.ad %>', this)"
                                             style="background: rgba(212, 175, 55, 0.2); border: 1px solid rgba(212, 175, 55, 0.4); color: #D4AF37; padding: 4px 8px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s;"
                                             onmouseover="this.style.background='rgba(212, 175, 55, 0.3)'"
                                             onmouseout="this.style.background='rgba(212, 175, 55, 0.2)'">
