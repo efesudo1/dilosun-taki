@@ -538,6 +538,36 @@ app.post('/admin/siparis/durum', requireAuth, requireAdmin, (req, res) => {
     });
 });
 
+// Multer ayarları (Dosya yükleme için)
+const multer = require('multer');
+
+// Dosya depolama ayarları
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads/') // Resimlerin kaydedileceği klasör
+    },
+    filename: function (req, file, cb) {
+        // Dosya adını benzersiz yap: urun-tarih.uzanti
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'urun-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+// Sadece resim dosyalarını kabul et
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+    } else {
+        cb(new Error('Sadece resim dosyaları yüklenebilir!'), false);
+    }
+};
+
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 } // Max 5MB
+});
+
 // Admin - Ürün ekleme sayfası
 app.get('/admin/urun/ekle', requireAuth, requireAdmin, (req, res) => {
     res.render('admin-urun-ekle', {
@@ -548,8 +578,14 @@ app.get('/admin/urun/ekle', requireAuth, requireAdmin, (req, res) => {
 });
 
 // Admin - Ürün ekle
-app.post('/admin/urun/ekle', requireAuth, requireAdmin, (req, res) => {
-    const { ad, tur, materyal, fiyat, resim, aciklama, stok } = req.body;
+app.post('/admin/urun/ekle', requireAuth, requireAdmin, upload.single('resimDosyasi'), (req, res) => {
+    const { ad, tur, materyal, fiyat, resimUrl, aciklama, stok } = req.body;
+
+    // Resim kaynağını belirle: Yüklenen dosya mı, URL mi?
+    let finalResim = resimUrl;
+    if (req.file) {
+        finalResim = '/uploads/' + req.file.filename;
+    }
 
     if (!ad || !tur || !materyal || !fiyat) {
         return res.render('admin-urun-ekle', {
@@ -561,7 +597,7 @@ app.post('/admin/urun/ekle', requireAuth, requireAdmin, (req, res) => {
 
     db.run(`INSERT INTO urunler (ad, tur, materyal, fiyat, resim, aciklama, stok)
             VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [ad, tur, materyal, parseFloat(fiyat), resim || null, aciklama || null, parseInt(stok) || 0],
+        [ad, tur, materyal, parseFloat(fiyat), finalResim || null, aciklama || null, parseInt(stok) || 0],
         function (err) {
             if (err) {
                 console.error('Ürün ekleme hatası:', err.message);
@@ -656,28 +692,41 @@ app.get('/admin/urun/guncelle/:id', requireAuth, requireAdmin, (req, res) => {
 });
 
 // Admin - Ürün güncelle
-app.post('/admin/urun/guncelle', requireAuth, requireAdmin, (req, res) => {
-    const { urun_id, ad, tur, materyal, fiyat, resim, aciklama, stok } = req.body;
+app.post('/admin/urun/guncelle', requireAuth, requireAdmin, upload.single('resimDosyasi'), (req, res) => {
+    const { urun_id, ad, tur, materyal, fiyat, resimUrl, aciklama, stok } = req.body;
+
+    // Resim kaynağını belirle
+    let finalResim = resimUrl; // Varsayılan olarak mevcut URL veya yeni girilen URL
+    if (req.file) {
+        finalResim = '/uploads/' + req.file.filename; // Dosya yüklendiyse onu kullan
+    }
 
     if (!urun_id || !ad || !tur || !materyal || !fiyat) {
         return res.render('admin-urun-guncelle', {
             kullanici: req.session.kullanici,
-            urun: { id: urun_id, ad, tur, materyal, fiyat, resim, aciklama, stok },
+            urun: { id: urun_id, ad, tur, materyal, fiyat, resim: finalResim, aciklama, stok },
             hata: 'Zorunlu alanları doldurunuz.',
             basarili: null
         });
     }
 
+    // Eğer resim değişmediyse ve dosya yüklenmediyse, eski resmi korumak için
+    // veritabanından mevcut resmi çekmeye gerek yok, çünkü formdan 'resimUrl' olarak
+    // eski resim URL'i de gelebilir (hidden input ile).
+    // Ancak en güvenlisi, eğer finalResim boşsa eskiyi korumaktır.
+    // Şimdilik basitçe UPDATE yapıyoruz, eğer finalResim null ise eski değer kalmaz, null olur.
+    // Bu yüzden frontend'de mevcut resmi hidden input olarak göndermeliyiz.
+
     db.run(`UPDATE urunler 
             SET ad = ?, tur = ?, materyal = ?, fiyat = ?, resim = ?, aciklama = ?, stok = ?
             WHERE id = ?`,
-        [ad, tur, materyal, parseFloat(fiyat), resim || null, aciklama || null, parseInt(stok) || 0, urun_id],
+        [ad, tur, materyal, parseFloat(fiyat), finalResim || null, aciklama || null, parseInt(stok) || 0, urun_id],
         function (err) {
             if (err) {
                 console.error('Ürün güncelleme hatası:', err.message);
                 return res.render('admin-urun-guncelle', {
                     kullanici: req.session.kullanici,
-                    urun: { id: urun_id, ad, tur, materyal, fiyat, resim, aciklama, stok },
+                    urun: { id: urun_id, ad, tur, materyal, fiyat, resim: finalResim, aciklama, stok },
                     hata: 'Ürün güncellenirken hata oluştu.',
                     basarili: null
                 });

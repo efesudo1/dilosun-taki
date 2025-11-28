@@ -70,7 +70,8 @@
                         </div>
                         <% } %>
 
-                            <form method="POST" action="/admin/urun/guncelle" class="admin-form">
+                            <form method="POST" action="/admin/urun/guncelle" class="admin-form"
+                                enctype="multipart/form-data">
                                 <input type="hidden" name="urun_id" value="<%= urun.id %>">
 
                                 <div class="form-group">
@@ -93,6 +94,7 @@
                                         <option value="bilezik" <%=urun.tur==='bilezik' ? 'selected' : '' %>>Bilezik
                                         </option>
                                         <option value="kolye" <%=urun.tur==='kolye' ? 'selected' : '' %>>Kolye</option>
+                                        <option value="yüzük" <%=urun.tur==='yüzük' ? 'selected' : '' %>>Yüzük</option>
                                     </select>
                                 </div>
 
@@ -124,10 +126,22 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="resim">Resim Yolu</label>
-                                    <input type="text" id="resim" name="resim" value="<%= urun.resim || '' %>"
-                                        placeholder="/images/urun.jpg">
-                                    <small>Resim dosyasını public/images/ klasörüne ekleyin ve yolunu belirtin.</small>
+                                    <label for="resimDosyasi">Ürün Resmi (Dosya Yükle)</label>
+                                    <input type="file" id="resimDosyasi" name="resimDosyasi" accept="image/*">
+
+                                    <div style="margin-top: 10px; text-align: center; color: #999;">- VEYA -</div>
+
+                                    <label for="resimUrl" style="margin-top: 10px;">Resim URL (İnternetten)</label>
+                                    <input type="text" id="resimUrl" name="resimUrl" value="<%= urun.resim || '' %>"
+                                        placeholder="https://...">
+
+                                    <% if (urun.resim) { %>
+                                        <div style="margin-top: 10px;">
+                                            <small>Mevcut Resim:</small><br>
+                                            <img src="<%= urun.resim %>" alt="Mevcut Resim"
+                                                style="max-width: 100px; border-radius: 8px; margin-top: 5px; border: 1px solid rgba(212, 175, 55, 0.3);">
+                                        </div>
+                                        <% } %>
                                 </div>
 
                                 <div class="form-group">

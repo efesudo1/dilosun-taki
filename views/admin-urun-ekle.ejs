@@ -212,7 +212,7 @@
                                     </div>
                                 </div>
 
-                                <form action="/admin/urun/ekle" method="POST">
+                                <form action="/admin/urun/ekle" method="POST" enctype="multipart/form-data">
                                     <div class="form-grid">
                                         <div class="form-group">
                                             <label for="ad">
@@ -269,11 +269,18 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="resim">
-                                                <span>Resim Yolu</span>
+                                            <label for="resimDosyasi">
+                                                <span>Ürün Resmi (Dosya Yükle)</span>
                                             </label>
-                                            <input type="text" id="resim" name="resim" placeholder="/images/urun.jpg">
-                                            <small>Resmi public/images/ klasörüne ekleyin</small>
+                                            <input type="file" id="resimDosyasi" name="resimDosyasi" accept="image/*">
+
+                                            <div style="margin-top: 10px; text-align: center; color: #999;">- VEYA -
+                                            </div>
+
+                                            <label for="resimUrl" style="margin-top: 10px;">
+                                                <span>Resim URL (İnternetten)</span>
+                                            </label>
+                                            <input type="text" id="resimUrl" name="resimUrl" placeholder="https://...">
                                         </div>
 
                                         <div class="form-group form-grid-full">
