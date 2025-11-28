@@ -4,11 +4,19 @@ const path = require('path');
 const dbPath = path.join(__dirname, 'taki.db');
 const db = new sqlite3.Database(dbPath);
 
+db.all("PRAGMA table_info(urunler)", (err, rows) => {
+    if (err) {
+        console.error(err);
+    } else {
+        console.log('Urunler Tablosu:', rows);
+    }
+});
+
 db.all("PRAGMA table_info(siparisler)", (err, rows) => {
     if (err) {
         console.error(err);
     } else {
-        console.log(rows);
+        console.log('Siparisler Tablosu:', rows);
     }
     db.close();
 });

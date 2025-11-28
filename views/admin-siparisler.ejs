@@ -50,60 +50,78 @@
             <p style="margin-bottom: 20px; color: #C0C0C0;">Toplam <%= siparisler.length %> sipariş</p>
 
             <% if (siparisler.length===0) { %>
-                <p style="color: #C0C0C0;">Henüz sipariş yok.</p>
+                <div
+                    style="text-align: center; padding: 50px; background: rgba(26, 26, 26, 0.6); border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                    <p style="color: #C0C0C0; font-size: 1.2rem;">Henüz sipariş bulunmamaktadır.</p>
+                </div>
                 <% } else { %>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Müşteri</th>
-                                <th>Telefon</th>
-                                <th>Toplam Tutar</th>
-                                <th>Durum</th>
-                                <th>Tarih</th>
-                                <th>İşlemler</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% siparisler.forEach(s=> { %>
-                                <tr>
-                                    <td>
-                                        <%= s.id %>
-                                    </td>
-                                    <td>
-                                        <%= s.ad ? s.ad + ' ' + (s.soyad || '' ) : s.email %>
-                                            <br><small style="color: #666;">
-                                                <%= s.email %>
-                                            </small>
-                                    </td>
-                                    <td>
-                                        <%= s.telefon || '-' %>
-                                    </td>
-                                    <td>
-                                        <%= s.toplam_tutar.toLocaleString('tr-TR') %> ₺
-                                    </td>
-                                    <td>
-                                        <% const durumMap={ 'beklemede' : 'Onay Bekliyor' , 'onaylandi'
-                                            : 'Sipariş Onaylandı' , 'hazirlaniyor' : 'Hazırlanıyor' , 'kargoda'
-                                            : 'Yola Çıktı' , 'tamamlandi' : 'Teslim Edildi' , 'iptal' : 'İptal' }; %>
-                                            <span class="status-badge status-<%= s.durum %>">
-                                                <%= durumMap[s.durum] || s.durum %>
-                                            </span>
-                                    </td>
-                                    <td>
-                                        <%= new Date(s.olusturma_tarihi).toLocaleDateString('tr-TR') %>
-                                    </td>
-                                    <td>
-                                        <a href="/admin/siparis/<%= s.id %>" class="btn btn-success"
-                                            style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-                                            <span>👁️</span>
-                                            <span>Detay</span>
-                                        </a>
-                                    </td>
+                    <div
+                        style="overflow-x: auto; background: rgba(26, 26, 26, 0.6); border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2); padding: 20px;">
+                        <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid rgba(212, 175, 55, 0.3);">
+                                    <th style="padding: 15px; text-align: left; color: #D4AF37;">ID</th>
+                                    <th style="padding: 15px; text-align: left; color: #D4AF37;">Müşteri</th>
+                                    <th style="padding: 15px; text-align: left; color: #D4AF37;">Telefon</th>
+                                    <th style="padding: 15px; text-align: left; color: #D4AF37;">Toplam Tutar</th>
+                                    <th style="padding: 15px; text-align: left; color: #D4AF37;">Durum</th>
+                                    <th style="padding: 15px; text-align: left; color: #D4AF37;">Tarih</th>
+                                    <th style="padding: 15px; text-align: left; color: #D4AF37;">İşlemler</th>
                                 </tr>
-                                <% }); %>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <% siparisler.forEach(s=> { %>
+                                    <tr
+                                        style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.3s;">
+                                        <td style="padding: 15px; color: #fff;">#<%= s.id %>
+                                        </td>
+                                        <td style="padding: 15px; color: #fff;">
+                                            <div style="font-weight: bold;">
+                                                <%= s.ad ? s.ad + ' ' + (s.soyad || '' ) : 'Misafir' %>
+                                            </div>
+                                            <div style="font-size: 0.85rem; color: #aaa;">
+                                                <%= s.email %>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 15px; color: #fff;">
+                                            <%= s.telefon || '-' %>
+                                        </td>
+                                        <td style="padding: 15px; color: #D4AF37; font-weight: bold;">
+                                            <%= s.toplam_tutar.toLocaleString('tr-TR') %> ₺
+                                        </td>
+                                        <td style="padding: 15px;">
+                                            <% const durumMap={ 'beklemede' : { text: 'Onay Bekliyor' , color: '#f0ad4e'
+                                                , bg: 'rgba(240, 173, 78, 0.2)' }, 'onaylandi' : { text: 'Onaylandı' ,
+                                                color: '#5bc0de' , bg: 'rgba(91, 192, 222, 0.2)' }, 'hazirlaniyor' : {
+                                                text: 'Hazırlanıyor' , color: '#0275d8' , bg: 'rgba(2, 117, 216, 0.2)'
+                                                }, 'kargoda' : { text: 'Kargoda' , color: '#5cb85c' ,
+                                                bg: 'rgba(92, 184, 92, 0.2)' }, 'tamamlandi' : { text: 'Tamamlandı' ,
+                                                color: '#28a745' , bg: 'rgba(40, 167, 69, 0.2)' }, 'iptal' : {
+                                                text: 'İptal' , color: '#d9534f' , bg: 'rgba(217, 83, 79, 0.2)' } };
+                                                const d=durumMap[s.durum] || { text: s.durum, color: '#fff' ,
+                                                bg: 'rgba(255,255,255,0.1)' }; %>
+                                                <span
+                                                    style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; color: <%= d.color %>; background: <%= d.bg %>; border: 1px solid <%= d.color %>;">
+                                                    <%= d.text %>
+                                                </span>
+                                        </td>
+                                        <td style="padding: 15px; color: #aaa; font-size: 0.9rem;">
+                                            <%= new Date(s.olusturma_tarihi).toLocaleDateString('tr-TR') %>
+                                                <br>
+                                                <%= new Date(s.olusturma_tarihi).toLocaleTimeString('tr-TR',
+                                                    {hour: '2-digit' , minute:'2-digit'}) %>
+                                        </td>
+                                        <td style="padding: 15px;">
+                                            <a href="/admin/siparis/<%= s.id %>" class="btn btn-sm"
+                                                style="background: rgba(212, 175, 55, 0.2); color: #D4AF37; border: 1px solid #D4AF37; text-decoration: none; padding: 6px 12px; border-radius: 6px; transition: all 0.3s;">
+                                                👁️ Detay
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
                     <% } %>
         </div>
     </main>

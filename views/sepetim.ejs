@@ -65,6 +65,61 @@
             font-family: monospace;
             resize: none;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: rgba(30, 30, 30, 0.95);
+            margin: 15% auto;
+            padding: 30px;
+            border: 1px solid #D4AF37;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #D4AF37;
+        }
+
+        .phone-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .phone-input:focus {
+            border-color: #D4AF37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
     </style>
 </head>
 
@@ -133,7 +188,43 @@
 
         <%- include('partials/footer') %>
 
+            <!-- Telefon Numarası Modalı -->
+            <div id="phoneModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h3 style="color: #D4AF37; font-family: 'Playfair Display', serif; margin-bottom: 20px;">İletişim
+                        Bilgisi</h3>
+                    <p style="color: #C0C0C0; margin-bottom: 20px;">Siparişinizle ilgili size ulaşabilmemiz için lütfen
+                        telefon numaranızı giriniz.</p>
+
+                    <div class="form-group">
+                        <input type="tel" id="phoneInput" placeholder="05XX XXX XX XX" class="phone-input">
+                    </div>
+
+                    <button onclick="submitOrder()" class="btn btn-primary" style="width: 100%; margin-top: 20px;">
+                        Siparişi Tamamla 🚀
+                    </button>
+                </div>
+            </div>
+
             <script>
+                // Modal işlemleri
+                const modal = document.getElementById("phoneModal");
+                const span = document.getElementsByClassName("close")[0];
+                const phoneInput = document.getElementById("phoneInput");
+
+                if (span) {
+                    span.onclick = function () {
+                        modal.style.display = "none";
+                    }
+                }
+
+                window.onclick = function (event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                }
+
                 function copyAllCodes() {
                     const copyText = document.getElementById("allCodes");
                     copyText.select();
@@ -155,27 +246,41 @@
 
                 function sendOrder() {
                     if (confirm('Bu kod listesini sipariş olarak göndermek istiyor musunuz?')) {
-                        const telefon = prompt("Lütfen size ulaşabileceğimiz bir telefon numarası giriniz:");
-                        if (telefon) {
-                            fetch('/siparis/olustur', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    notlar: document.getElementById("allCodes").value,
-                                    telefon: telefon
-                                })
-                            })
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        alert(data.message);
-                                        window.location.href = '/siparislerim';
-                                    } else {
-                                        alert('Hata: ' + data.message);
-                                    }
-                                });
-                        }
+                        modal.style.display = "block";
+                        phoneInput.focus();
                     }
+                }
+
+                function submitOrder() {
+                    const telefon = phoneInput.value.trim();
+
+                    if (!telefon) {
+                        alert("Lütfen telefon numaranızı giriniz.");
+                        return;
+                    }
+
+                    fetch('/siparis/olustur', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            notlar: document.getElementById("allCodes").value,
+                            telefon: telefon
+                        })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                modal.style.display = "none";
+                                alert(data.message);
+                                window.location.href = '/siparislerim';
+                            } else {
+                                alert('Hata: ' + data.message);
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Sipariş hatası:', err);
+                            alert('Bir hata oluştu. Lütfen tekrar deneyiniz.');
+                        });
                 }
             </script>
 </body>
