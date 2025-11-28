@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="/css/admin.css">
     <link rel="stylesheet" href="/css/buttons.css">
 </head>
+
 <body>
     <header>
         <div class="container">
@@ -18,8 +20,8 @@
                 <div class="user-menu">
                     <div class="user-info">
                         <span class="user-name">
-                            <%= kullanici.ad ? kullanici.ad + ' ' + (kullanici.soyad || '') : kullanici.email %>
-                            <span class="badge-admin">Admin</span>
+                            <%= kullanici.ad ? kullanici.ad + ' ' + (kullanici.soyad || '' ) : kullanici.email %>
+                                <span class="badge-admin">Admin</span>
                         </span>
                         <div class="header-links">
                             <a href="/">Ana Sayfa</a>
@@ -37,116 +39,154 @@
             <a href="/admin/urunler" class="nav-item">Ürünler</a>
             <a href="/admin/urun/ekle" class="nav-item">Ürün Ekle</a>
             <a href="/admin/kullanicilar" class="nav-item">Kullanıcılar</a>
-            <a href="/admin/siparisler" class="nav-item">Siparişler</a>
+            <a href="/admin/siparisler" class="nav-item active">Siparişler</a>
         </div>
 
         <div class="admin-content">
             <div style="margin-bottom: 20px;">
-                <a href="/admin/siparisler" style="color: #D4AF37; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3); transition: all 0.3s ease;" 
-                   onmouseover="this.style.background='rgba(212, 175, 55, 0.2)'; this.style.borderColor='rgba(212, 175, 55, 0.5)'"
-                   onmouseout="this.style.background='rgba(212, 175, 55, 0.1)'; this.style.borderColor='rgba(212, 175, 55, 0.3)'">
+                <a href="/admin/siparisler"
+                    style="color: #D4AF37; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3); transition: all 0.3s ease;"
+                    onmouseover="this.style.background='rgba(212, 175, 55, 0.2)'; this.style.borderColor='rgba(212, 175, 55, 0.5)'"
+                    onmouseout="this.style.background='rgba(212, 175, 55, 0.1)'; this.style.borderColor='rgba(212, 175, 55, 0.3)'">
                     <span>←</span>
                     <span>Siparişlere Dön</span>
                 </a>
             </div>
 
-            <h2 style="font-family: 'Playfair Display', serif; color: #F4E4BC; background: linear-gradient(135deg, #D4AF37 0%, #C0C0C0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+            <h2
+                style="font-family: 'Playfair Display', serif; color: #F4E4BC; background: linear-gradient(135deg, #D4AF37 0%, #C0C0C0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                 Sipariş Detayı #<%= siparis.id %>
             </h2>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
-                <div style="background: rgba(26, 26, 26, 0.6); padding: 20px; border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2);">
-                    <h3 style="color: #F4E4BC; margin-bottom: 15px; font-family: 'Playfair Display', serif;">Müşteri Bilgileri</h3>
-                    <p style="color: #C0C0C0; margin: 8px 0;"><strong style="color: #D4AF37;">Ad:</strong> <%= siparis.ad ? siparis.ad + ' ' + (siparis.soyad || '') : '-' %></p>
-                    <p style="color: #C0C0C0; margin: 8px 0;"><strong style="color: #D4AF37;">E-posta:</strong> <%= siparis.email %></p>
-                    <p style="color: #C0C0C0; margin: 8px 0;"><strong style="color: #D4AF37;">Telefon:</strong> <%= siparis.telefon || '-' %></p>
+                <div
+                    style="background: rgba(26, 26, 26, 0.6); padding: 20px; border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                    <h3 style="color: #F4E4BC; margin-bottom: 15px; font-family: 'Playfair Display', serif;">Müşteri
+                        Bilgileri</h3>
+                    <p style="color: #C0C0C0; margin: 8px 0;"><strong style="color: #D4AF37;">Ad:</strong>
+                        <%= siparis.ad ? siparis.ad + ' ' + (siparis.soyad || '' ) : '-' %>
+                    </p>
+                    <p style="color: #C0C0C0; margin: 8px 0;"><strong style="color: #D4AF37;">E-posta:</strong>
+                        <%= siparis.email %>
+                    </p>
+                    <p style="color: #C0C0C0; margin: 8px 0;"><strong style="color: #D4AF37;">Telefon:</strong>
+                        <%= siparis.telefon || '-' %>
+                    </p>
                 </div>
-                <div style="background: rgba(26, 26, 26, 0.6); padding: 20px; border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2);">
-                    <h3 style="color: #F4E4BC; margin-bottom: 15px; font-family: 'Playfair Display', serif;">Sipariş Bilgileri</h3>
-                    <p style="color: #C0C0C0; margin: 8px 0;"><strong style="color: #D4AF37;">Durum:</strong> 
+                <div
+                    style="background: rgba(26, 26, 26, 0.6); padding: 20px; border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                    <h3 style="color: #F4E4BC; margin-bottom: 15px; font-family: 'Playfair Display', serif;">Sipariş
+                        Bilgileri</h3>
+                    <p style="color: #C0C0C0; margin: 8px 0;"><strong style="color: #D4AF37;">Durum:</strong>
                         <span class="status-badge status-<%= siparis.durum %>">
-                            <% 
-                                const durumMap = {
-                                    'beklemede': 'Onay Bekliyor',
-                                    'onaylandi': 'Sipariş Onaylandı',
-                                    'hazirlaniyor': 'Hazırlanıyor',
-                                    'kargoda': 'Yola Çıktı',
-                                    'tamamlandi': 'Teslim Edildi',
-                                    'iptal': 'İptal'
-                                };
-                            %>
-                            <%= durumMap[siparis.durum] || siparis.durum %>
+                            <% const durumMap={ 'beklemede' : 'Onay Bekliyor' , 'onaylandi' : 'Sipariş Onaylandı'
+                                , 'hazirlaniyor' : 'Hazırlanıyor' , 'kargoda' : 'Yola Çıktı' , 'tamamlandi'
+                                : 'Teslim Edildi' , 'iptal' : 'İptal' }; %>
+                                <%= durumMap[siparis.durum] || siparis.durum %>
                         </span>
                     </p>
-                    <p style="color: #C0C0C0; margin: 8px 0;"><strong style="color: #D4AF37;">Toplam Tutar:</strong> 
-                        <span style="color: #D4AF37; font-weight: 700; font-family: 'Playfair Display', serif; font-size: 1.2rem;">
+                    <p style="color: #C0C0C0; margin: 8px 0;"><strong style="color: #D4AF37;">Toplam Tutar:</strong>
+                        <span
+                            style="color: #D4AF37; font-weight: 700; font-family: 'Playfair Display', serif; font-size: 1.2rem;">
                             <%= siparis.toplam_tutar.toLocaleString('tr-TR') %> ₺
                         </span>
                     </p>
-                    <p style="color: #C0C0C0; margin: 8px 0;"><strong style="color: #D4AF37;">Tarih:</strong> <%= new Date(siparis.olusturma_tarihi).toLocaleString('tr-TR') %></p>
+                    <p style="color: #C0C0C0; margin: 8px 0;"><strong style="color: #D4AF37;">Tarih:</strong>
+                        <%= new Date(siparis.olusturma_tarihi).toLocaleString('tr-TR') %>
+                    </p>
                 </div>
             </div>
 
             <% if (siparis.adres) { %>
-                <div style="margin: 20px 0; background: rgba(26, 26, 26, 0.6); padding: 20px; border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                <div
+                    style="margin: 20px 0; background: rgba(26, 26, 26, 0.6); padding: 20px; border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2);">
                     <h3 style="color: #F4E4BC; margin-bottom: 10px; font-family: 'Playfair Display', serif;">Adres</h3>
-                    <p style="color: #C0C0C0;"><%= siparis.adres %></p>
+                    <p style="color: #C0C0C0;">
+                        <%= siparis.adres %>
+                    </p>
                 </div>
-            <% } %>
+                <% } %>
 
-            <% if (siparis.notlar) { %>
-                <div style="margin: 20px 0; background: rgba(26, 26, 26, 0.6); padding: 20px; border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2);">
-                    <h3 style="color: #F4E4BC; margin-bottom: 10px; font-family: 'Playfair Display', serif;">Notlar</h3>
-                    <p style="color: #C0C0C0;"><%= siparis.notlar %></p>
-                </div>
-            <% } %>
+                    <% if (siparis.notlar) { %>
+                        <div
+                            style="margin: 20px 0; background: rgba(26, 26, 26, 0.6); padding: 20px; border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                            <h3 style="color: #F4E4BC; margin-bottom: 10px; font-family: 'Playfair Display', serif;">
+                                Notlar (Kod Listesi)</h3>
+                            <pre
+                                style="color: #C0C0C0; font-family: 'Courier New', monospace; white-space: pre-wrap; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;"><%= siparis.notlar %></pre>
+                        </div>
+                        <% } %>
 
-            <div style="margin: 30px 0; background: rgba(26, 26, 26, 0.6); padding: 20px; border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2);">
-                <h3 style="color: #F4E4BC; margin-bottom: 15px; font-family: 'Playfair Display', serif;">Sipariş Durumunu Güncelle</h3>
-                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <select id="durum-select" style="padding: 12px 18px; background: rgba(26, 26, 26, 0.8); color: #f5f5f5; border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 8px; font-size: 1rem; flex: 1; min-width: 200px;">
-                    <option value="beklemede" <%= siparis.durum === 'beklemede' ? 'selected' : '' %>>Onay Bekliyor</option>
-                    <option value="onaylandi" <%= siparis.durum === 'onaylandi' ? 'selected' : '' %>>Sipariş Onaylandı</option>
-                    <option value="hazirlaniyor" <%= siparis.durum === 'hazirlaniyor' ? 'selected' : '' %>>Hazırlanıyor</option>
-                    <option value="kargoda" <%= siparis.durum === 'kargoda' ? 'selected' : '' %>>Yola Çıktı</option>
-                    <option value="tamamlandi" <%= siparis.durum === 'tamamlandi' ? 'selected' : '' %>>Teslim Edildi</option>
-                    <option value="iptal" <%= siparis.durum === 'iptal' ? 'selected' : '' %>>İptal</option>
-                </select>
-                <button onclick="durumGuncelle()" class="btn btn-success">
-                    <span>💎</span>
-                    <span>Güncelle</span>
-                </button>
-                </div>
-            </div>
-
-            <h3 style="color: #F4E4BC; font-family: 'Playfair Display', serif; margin-bottom: 20px;">Sipariş Ürünleri</h3>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Ürün</th>
-                        <th>Adet</th>
-                        <th>Birim Fiyat</th>
-                        <th>Toplam</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% detaylar.forEach(d => { %>
-                        <tr>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <% if (d.resim) { %>
-                                        <img src="<%= d.resim %>" alt="<%= d.urun_ad %>" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
-                                    <% } %>
-                                    <span><%= d.urun_ad %></span>
+                            <div
+                                style="margin: 30px 0; background: rgba(26, 26, 26, 0.6); padding: 20px; border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                                <h3
+                                    style="color: #F4E4BC; margin-bottom: 15px; font-family: 'Playfair Display', serif;">
+                                    Sipariş Durumunu Güncelle</h3>
+                                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                    <select id="durum-select"
+                                        style="padding: 12px 18px; background: rgba(26, 26, 26, 0.8); color: #f5f5f5; border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 8px; font-size: 1rem; flex: 1; min-width: 200px;">
+                                        <option value="beklemede" <%=siparis.durum==='beklemede' ? 'selected' : '' %>
+                                            >Onay Bekliyor</option>
+                                        <option value="onaylandi" <%=siparis.durum==='onaylandi' ? 'selected' : '' %>
+                                            >Sipariş Onaylandı</option>
+                                        <option value="hazirlaniyor" <%=siparis.durum==='hazirlaniyor' ? 'selected' : ''
+                                            %>>Hazırlanıyor</option>
+                                        <option value="kargoda" <%=siparis.durum==='kargoda' ? 'selected' : '' %>>Yola
+                                            Çıktı</option>
+                                        <option value="tamamlandi" <%=siparis.durum==='tamamlandi' ? 'selected' : '' %>
+                                            >Teslim Edildi</option>
+                                        <option value="iptal" <%=siparis.durum==='iptal' ? 'selected' : '' %>>İptal
+                                        </option>
+                                    </select>
+                                    <button onclick="durumGuncelle()" class="btn btn-success">
+                                        <span>💎</span>
+                                        <span>Güncelle</span>
+                                    </button>
                                 </div>
-                            </td>
-                            <td><%= d.adet %></td>
-                            <td><%= d.birim_fiyat.toLocaleString('tr-TR') %> ₺</td>
-                            <td><%= d.toplam_fiyat.toLocaleString('tr-TR') %> ₺</td>
-                        </tr>
-                    <% }); %>
-                </tbody>
-            </table>
+                            </div>
+
+                            <h3 style="color: #F4E4BC; font-family: 'Playfair Display', serif; margin-bottom: 20px;">
+                                Sipariş Ürünleri</h3>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ürün Kodu</th>
+                                        <th>Ürün</th>
+                                        <th>Adet</th>
+                                        <th>Birim Fiyat</th>
+                                        <th>Toplam</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% detaylar.forEach(d=> { %>
+                                        <tr>
+                                            <td><strong style="color: #D4AF37;">
+                                                    <%= d.urun_kodu %>
+                                                </strong></td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                    <% if (d.resim) { %>
+                                                        <img src="<%= d.resim %>" alt="<%= d.urun_ad %>"
+                                                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                                        <% } %>
+                                                            <span>
+                                                                <%= d.urun_ad %>
+                                                            </span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <%= d.adet %>
+                                            </td>
+                                            <td>
+                                                <%= d.birim_fiyat.toLocaleString('tr-TR') %> ₺
+                                            </td>
+                                            <td>
+                                                <%= d.toplam_fiyat.toLocaleString('tr-TR') %> ₺
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                </tbody>
+                            </table>
         </div>
     </main>
 
@@ -159,7 +199,7 @@
     <script>
         function durumGuncelle() {
             const durum = document.getElementById('durum-select').value;
-            
+
             fetch('/admin/siparis/durum', {
                 method: 'POST',
                 headers: {
@@ -170,21 +210,21 @@
                     durum: durum
                 })
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Sipariş durumu güncellendi.');
-                    location.reload();
-                } else {
-                    alert(data.message || 'Durum güncellenemedi.');
-                }
-            })
-            .catch(err => {
-                console.error('Hata:', err);
-                alert('Bir hata oluştu.');
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Sipariş durumu güncellendi.');
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Durum güncellenemedi.');
+                    }
+                })
+                .catch(err => {
+                    console.error('Hata:', err);
+                    alert('Bir hata oluştu.');
+                });
         }
     </script>
 </body>
-</html>
 
+</html>

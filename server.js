@@ -673,7 +673,7 @@ app.get('/admin/siparis/:id', requireAuth, requireAdmin, (req, res) => {
             return res.status(404).send('Sipariş bulunamadı.');
         }
 
-        db.all(`SELECT sd.*, u.ad as urun_ad, u.resim
+        db.all(`SELECT sd.*, u.ad as urun_ad, u.resim, u.urun_kodu
                 FROM siparis_detaylari sd
                 JOIN urunler u ON sd.urun_id = u.id
                 WHERE sd.siparis_id = ?`, [siparis_id], (err, detaylar) => {
