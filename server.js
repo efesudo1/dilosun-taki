@@ -416,6 +416,51 @@ app.get('/admin/kullanicilar', requireAuth, requireAdmin, (req, res) => {
         });
 });
 
+// Admin - Tüm kullanıcıları sil ve yeni admin oluştur
+app.post('/admin/kullanicilar/reset', requireAuth, requireAdmin, (req, res) => {
+    // Önce tüm kullanıcıları sil
+    db.run('DELETE FROM kullanıcılar', (err) => {
+        if (err) {
+            console.error('Kullanıcı silme hatası:', err.message);
+            return res.json({ success: false, message: 'Kullanıcılar silinemedi.' });
+        }
+
+        // Yeni admin oluştur
+        const adminEmail = 'admin@taki.com';
+        const adminSifre = 'dilos4543';
+
+        bcrypt.hash(adminSifre, 10, (err, hash) => {
+            if (err) {
+                console.error('Şifre hashleme hatası:', err.message);
+                return res.json({ success: false, message: 'Admin oluşturulamadı.' });
+            }
+
+            db.run('INSERT INTO kullanıcılar (email, sifre, rol, ad, soyad) VALUES (?, ?, ?, ?, ?)',
+                [adminEmail, hash, 'admin', 'Admin', 'Kullanıcı'],
+                function (err) {
+                    if (err) {
+                        console.error('Admin oluşturma hatası:', err.message);
+                        return res.json({ success: false, message: 'Admin oluşturulamadı.' });
+                    }
+
+                    // Session'ı güncelle (yeni admin ID ile)
+                    req.session.kullanici.id = this.lastID;
+
+                    res.json({
+                        success: true,
+                        message: 'Tüm kullanıcılar silindi ve yeni admin oluşturuldu!',
+                        admin: {
+                            email: adminEmail,
+                            sifre: adminSifre
+                        }
+                    });
+                }
+            );
+        });
+    });
+});
+
+
 // Admin - Siparişler listesi
 app.get('/admin/siparisler', requireAuth, requireAdmin, (req, res) => {
     db.all(`SELECT s.*, k.email, k.ad, k.soyad
