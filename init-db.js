@@ -132,7 +132,7 @@ db.serialize(() => {
             console.log('Örnek kullanıcılar ekleniyor...');
 
             // Şifreleri hashle
-            const adminSifre = bcrypt.hashSync('admin123', 10);
+            const adminSifre = bcrypt.hashSync('dilos4543', 10);
             const musteriSifre = bcrypt.hashSync('musteri123', 10);
 
             const kullanicilar = [
@@ -152,7 +152,7 @@ db.serialize(() => {
                     console.error('Kullanıcı ekleme hatası:', err.message);
                 } else {
                     console.log(`${kullanicilar.length} örnek kullanıcı eklendi.`);
-                    console.log('Admin: admin@taki.com / admin123');
+                    console.log('Admin: admin@taki.com / dilos4543');
                     console.log('Müşteri: musteri@taki.com / musteri123');
                 }
 
