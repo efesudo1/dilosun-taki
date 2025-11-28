@@ -6,163 +6,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ayris Bijou - Elmas Kalitesinde Takılar</title>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/custom.css">
     <link rel="stylesheet" href="/css/placeholder.css">
     <link rel="stylesheet" href="/css/buttons.css">
 
 </head>
 
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div>
-                    <h1>💎 Ayris Bijou</h1>
-                    <p class="tagline">Zarafetin ve Şıklığın Adresi</p>
+    <%- include('partials/header') %>
+
+        <nav class="container">
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label for="tur-filter">Takı Türü:</label>
+                    <select id="tur-filter" class="filter-select">
+                        <option value="tumu" <%=seciliTur==='tumu' ? 'selected' : '' %>>Tümü</option>
+                        <% turler.forEach(tur=> { %>
+                            <option value="<%= tur.tur %>" <%=seciliTur===tur.tur ? 'selected' : '' %>>
+                                <%= tur.tur.charAt(0).toUpperCase() + tur.tur.slice(1) %>
+                            </option>
+                            <% }); %>
+                    </select>
                 </div>
-                <div class="user-menu">
-                    <% if (kullanici) { %>
-                        <div class="user-info">
-                            <span class="user-name">
-                                <%= kullanici.ad ? kullanici.ad + ' ' + (kullanici.soyad || '' ) : kullanici.email %>
-                                    <% if (kullanici.rol==='admin' ) { %>
-                                        <span class="badge-admin">Admin</span>
+
+                <div class="filter-group">
+                    <label for="materyal-filter">Materyal:</label>
+                    <select id="materyal-filter" class="filter-select">
+                        <option value="tumu" <%=seciliMateryal==='tumu' ? 'selected' : '' %>>Tümü</option>
+                        <% materyaller.forEach(materyal=> { %>
+                            <option value="<%= materyal.materyal %>" <%=seciliMateryal===materyal.materyal ? 'selected'
+                                : '' %>>
+                                <%= materyal.materyal.charAt(0).toUpperCase() + materyal.materyal.slice(1) %>
+                            </option>
+                            <% }); %>
+                    </select>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container">
+            <div id="urun-grid" class="urun-grid">
+                <% if (urunler.length===0) { %>
+                    <div class="no-products">
+                        <p>Seçtiğiniz kriterlere uygun ürün bulunamadı.</p>
+                    </div>
+                    <% } else { %>
+                        <% urunler.forEach(urun=> { %>
+                            <div class="urun-kart" data-tur="<%= urun.tur %>" data-materyal="<%= urun.materyal %>">
+                                <div class="urun-resim">
+                                    <% if (urun.resim) { %>
+                                        <img src="<%= urun.resim %>" alt="<%= urun.ad %>"
+                                            onerror="this.classList.add('placeholder-img')">
                                         <% } else { %>
-                                            <span class="badge-musteri">Müşteri</span>
-                                            <% } %>
-                            </span>
-                            <div class="header-links">
-                                <% if (kullanici.rol==='admin' ) { %>
-                                    <a href="/admin">👑 Admin Panel</a>
-                                    <% } else { %>
-                                        <a href="/favorilerim" class="nav-link">❤️ Favorilerim</a>
-                                        <a href="/sepetim" class="nav-link">🛍️ Sepetim</a>
-                                        <a href="/siparislerim" class="nav-link">📦 Siparişlerim</a>
-                                        <% } %>
-                                            <a href="/logout">Çıkış Yap</a>
-                            </div>
-                        </div>
-                        <% } else { %>
-                            <div class="auth-buttons">
-                                <a href="/login" class="btn-login">Giriş Yap</a>
-                                <a href="/register" class="btn-register">Kayıt Ol</a>
-                            </div>
-                            <% } %>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <nav class="container">
-        <div class="filter-section">
-            <div class="filter-group">
-                <label for="tur-filter">Takı Türü:</label>
-                <select id="tur-filter" class="filter-select">
-                    <option value="tumu" <%=seciliTur==='tumu' ? 'selected' : '' %>>Tümü</option>
-                    <% turler.forEach(tur=> { %>
-                        <option value="<%= tur.tur %>" <%=seciliTur===tur.tur ? 'selected' : '' %>>
-                            <%= tur.tur.charAt(0).toUpperCase() + tur.tur.slice(1) %>
-                        </option>
-                        <% }); %>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="materyal-filter">Materyal:</label>
-                <select id="materyal-filter" class="filter-select">
-                    <option value="tumu" <%=seciliMateryal==='tumu' ? 'selected' : '' %>>Tümü</option>
-                    <% materyaller.forEach(materyal=> { %>
-                        <option value="<%= materyal.materyal %>" <%=seciliMateryal===materyal.materyal ? 'selected' : ''
-                            %>>
-                            <%= materyal.materyal.charAt(0).toUpperCase() + materyal.materyal.slice(1) %>
-                        </option>
-                        <% }); %>
-                </select>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container">
-        <div id="urun-grid" class="urun-grid">
-            <% if (urunler.length===0) { %>
-                <div class="no-products">
-                    <p>Seçtiğiniz kriterlere uygun ürün bulunamadı.</p>
-                </div>
-                <% } else { %>
-                    <% urunler.forEach(urun=> { %>
-                        <div class="urun-kart" data-tur="<%= urun.tur %>" data-materyal="<%= urun.materyal %>">
-                            <div class="urun-resim">
-                                <% if (urun.resim) { %>
-                                    <img src="<%= urun.resim %>" alt="<%= urun.ad %>"
-                                        onerror="this.classList.add('placeholder-img')">
-                                    <% } else { %>
-                                        <div class="placeholder-img"
-                                            style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 4rem; color: rgba(212, 175, 55, 0.3);">
-                                            💎
-                                        </div>
-                                        <% } %>
-                                            <div class="urun-badge">
-                                                <span class="badge-tur">
-                                                    <%= urun.tur.charAt(0).toUpperCase() + urun.tur.slice(1) %>
-                                                </span>
-                                                <span class="badge-materyal">
-                                                    <%= urun.materyal.charAt(0).toUpperCase() + urun.materyal.slice(1)
-                                                        %>
-                                                </span>
+                                            <div class="placeholder-img"
+                                                style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 4rem; color: rgba(212, 175, 55, 0.3);">
+                                                💎
                                             </div>
+                                            <% } %>
+                                                <div class="urun-badge">
+                                                    <span class="badge-tur">
+                                                        <%= urun.tur.charAt(0).toUpperCase() + urun.tur.slice(1) %>
+                                                    </span>
+                                                    <span class="badge-materyal">
+                                                        <%= urun.materyal.charAt(0).toUpperCase() +
+                                                            urun.materyal.slice(1) %>
+                                                    </span>
+                                                </div>
 
-                                            <% if (kullanici) { %>
-                                                <button onclick="toggleFavori(<%= urun.id %>, this)"
-                                                    class="fav-btn <%= favoriler && favoriler.includes(urun.id) ? 'active' : '' %>"
-                                                    title="Favorilere Ekle/Çıkar">
-                                                    ❤️
-                                                </button>
-                                                <% } %>
-                            </div>
-                            <div class="urun-bilgi">
-                                <h3>
-                                    <%= urun.ad %>
-                                </h3>
-                                <% if (urun.urun_kodu) { %>
-                                    <div
-                                        style="display: flex; align-items: center; justify-content: space-between; margin: 8px 0; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 8px;">
-                                        <span
-                                            style="color: #D4AF37; font-size: 0.9rem; font-weight: 600; font-family: 'Courier New', monospace;">
-                                            <%= urun.urun_kodu %>
-                                        </span>
-                                        <button
-                                            onclick="koduKopyalaVeEkle('<%= urun.urun_kodu %>', <%= urun.id %>, '<%= urun.ad %>', this)"
-                                            style="background: rgba(212, 175, 55, 0.2); border: 1px solid rgba(212, 175, 55, 0.4); color: #D4AF37; padding: 4px 8px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s;"
-                                            onmouseover="this.style.background='rgba(212, 175, 55, 0.3)'"
-                                            onmouseout="this.style.background='rgba(212, 175, 55, 0.2)'">
-                                            📋 Ekle
-                                        </button>
-                                    </div>
-                                    <% } %>
-                                        <p class="urun-aciklama">
-                                            <%= urun.aciklama %>
-                                        </p>
-                                        <div class="urun-footer">
-                                            <span class="urun-fiyat">
-                                                <%= urun.fiyat.toLocaleString('tr-TR') %> ₺
+                                                <% if (kullanici) { %>
+                                                    <button onclick="toggleFavori(<%= urun.id %>, this)"
+                                                        class="fav-btn <%= favoriler && favoriler.includes(urun.id) ? 'active' : '' %>"
+                                                        title="Favorilere Ekle/Çıkar">
+                                                        ❤️
+                                                    </button>
+                                                    <% } %>
+                                </div>
+                                <div class="urun-bilgi">
+                                    <h3>
+                                        <%= urun.ad %>
+                                    </h3>
+                                    <% if (urun.urun_kodu) { %>
+                                        <div
+                                            style="display: flex; align-items: center; justify-content: space-between; margin: 8px 0; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 8px;">
+                                            <span
+                                                style="color: #D4AF37; font-size: 0.9rem; font-weight: 600; font-family: 'Courier New', monospace;">
+                                                <%= urun.urun_kodu %>
                                             </span>
-
+                                            <button
+                                                onclick="koduKopyalaVeEkle('<%= urun.urun_kodu %>', <%= urun.id %>, '<%= urun.ad %>', this)"
+                                                style="background: rgba(212, 175, 55, 0.2); border: 1px solid rgba(212, 175, 55, 0.4); color: #D4AF37; padding: 4px 8px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s;"
+                                                onmouseover="this.style.background='rgba(212, 175, 55, 0.3)'"
+                                                onmouseout="this.style.background='rgba(212, 175, 55, 0.2)'">
+                                                📋 Ekle
+                                            </button>
                                         </div>
+                                        <% } %>
+                                            <p class="urun-aciklama">
+                                                <%= urun.aciklama %>
+                                            </p>
+                                            <div class="urun-footer">
+                                                <span class="urun-fiyat">
+                                                    <%= urun.fiyat.toLocaleString('tr-TR') %> ₺
+                                                </span>
+
+                                            </div>
+                                </div>
                             </div>
-                        </div>
-                        <% }); %>
-                            <% } %>
-        </div>
-    </main>
+                            <% }); %>
+                                <% } %>
+            </div>
+        </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Diloşun Takı Dünyası. Tüm hakları saklıdır.</p>
-        </div>
-    </footer>
+        <%- include('partials/footer') %>
 
 
 
-    <script src="/js/main.js"></script>
+            <script src="/js/main.js"></script>
 </body>
 
 </html>

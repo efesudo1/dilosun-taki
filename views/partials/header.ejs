@@ -1,0 +1,39 @@
+<header>
+    <div class="container">
+        <div class="header-content">
+            <div>
+                <h1><a href="/" style="text-decoration: none; color: inherit;">💎 Ayris Bijou</a></h1>
+                <p class="tagline">Zarafetin ve Şıklığın Adresi</p>
+            </div>
+            <div class="user-menu">
+                <% if (typeof kullanici !=='undefined' && kullanici) { %>
+                    <div class="user-info">
+                        <span class="user-name">
+                            <%= kullanici.ad ? kullanici.ad + ' ' + (kullanici.soyad || '' ) : kullanici.email %>
+                                <% if (kullanici.rol==='admin' ) { %>
+                                    <span class="badge-admin">Admin</span>
+                                    <% } else { %>
+                                        <span class="badge-musteri">Müşteri</span>
+                                        <% } %>
+                        </span>
+                        <div class="header-links">
+                            <% if (kullanici.rol==='admin' ) { %>
+                                <a href="/admin">👑 Admin Panel</a>
+                                <% } else { %>
+                                    <a href="/favorilerim" class="nav-link">❤️ Favorilerim</a>
+                                    <a href="/sepetim" class="nav-link">🛍️ Sepetim</a>
+                                    <a href="/siparislerim" class="nav-link">📦 Siparişlerim</a>
+                                    <% } %>
+                                        <a href="/logout">Çıkış Yap</a>
+                        </div>
+                    </div>
+                    <% } else { %>
+                        <div class="auth-buttons">
+                            <a href="/login" class="btn-login">Giriş Yap</a>
+                            <a href="/register" class="btn-register">Kayıt Ol</a>
+                        </div>
+                        <% } %>
+            </div>
+        </div>
+    </div>
+</header>
