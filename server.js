@@ -367,7 +367,7 @@ app.post('/api/sepet/ekle', (req, res) => {
     }
 
     // Toplam fiyatı ve ürün sayısını hesapla
-    const toplamFiyat = req.session.sepet.reduce((acc, item) => acc + (item.fiyat * item.adet), 0);
+    const toplamFiyat = req.session.sepet.reduce((acc, item) => acc + ((parseFloat(item.fiyat) || 0) * item.adet), 0);
 
     req.session.save(() => {
         res.json({
@@ -381,7 +381,7 @@ app.post('/api/sepet/ekle', (req, res) => {
 // Sepetim Sayfası
 app.get('/sepetim', (req, res) => {
     const sepet = req.session.sepet || [];
-    const toplamFiyat = sepet.reduce((acc, item) => acc + (item.fiyat * item.adet), 0);
+    const toplamFiyat = sepet.reduce((acc, item) => acc + ((parseFloat(item.fiyat) || 0) * item.adet), 0);
 
     res.render('sepetim', {
         siteAdi: 'Ayris Bijou',
@@ -411,8 +411,8 @@ app.post('/siparis/olustur', requireAuth, (req, res) => {
     const notlar = req.body.notlar || 'Kod listesi gönderildi.';
     const telefon = req.body.telefon || '';
 
-    // Toplam tutarı hesapla
-    const toplam_tutar = sepet.reduce((acc, item) => acc + (item.fiyat * item.adet), 0);
+    // Toplam tutarı hesapla (Eski sepet öğeleri için fiyat kontrolü yap)
+    const toplam_tutar = sepet.reduce((acc, item) => acc + ((parseFloat(item.fiyat) || 0) * item.adet), 0);
 
     db.serialize(() => {
         db.run('INSERT INTO siparisler (kullanici_id, toplam_tutar, notlar, telefon) VALUES (?, ?, ?, ?)',
@@ -420,14 +420,14 @@ app.post('/siparis/olustur', requireAuth, (req, res) => {
             function (err) {
                 if (err) {
                     console.error('Sipariş oluşturma hatası:', err);
-                    return res.json({ success: false, message: 'Sipariş oluşturulamadı.' });
+                    return res.json({ success: false, message: 'Sipariş oluşturulamadı: ' + err.message });
                 }
 
                 const siparis_id = this.lastID;
                 const stmt = db.prepare('INSERT INTO siparis_detaylari (siparis_id, urun_id, adet, birim_fiyat) VALUES (?, ?, ?, ?)');
 
                 sepet.forEach(item => {
-                    stmt.run(siparis_id, item.urun_id, 1, item.fiyat);
+                    stmt.run(siparis_id, item.urun_id, 1, parseFloat(item.fiyat) || 0);
                 });
 
                 stmt.finalize(() => {
