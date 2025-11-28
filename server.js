@@ -703,18 +703,22 @@ const getLocalIP = () => {
 };
 
 // Sunucuyu başlat
-app.listen(PORT, HOST, () => {
-    const localIP = getLocalIP();
-    console.log('='.repeat(50));
-    console.log('🚀 Sunucu başarıyla başlatıldı!');
-    console.log('='.repeat(50));
-    console.log(`📍 Local:     http://localhost:${PORT}`);
-    if (HOST === '0.0.0.0' && localIP !== 'localhost') {
-        console.log(`🌐 Network:   http://${localIP}:${PORT}`);
-        console.log(`\n💡 Aynı ağdaki cihazlardan erişim için: http://${localIP}:${PORT}`);
-    }
-    console.log('='.repeat(50));
-    console.log('Veritabanını başlatmak için: npm run init-db');
+const setupDatabase = require('./db-setup');
+
+setupDatabase().then(() => {
+    app.listen(PORT, HOST, () => {
+        const localIP = getLocalIP();
+        console.log('='.repeat(50));
+        console.log('🚀 Sunucu başarıyla başlatıldı!');
+        console.log('='.repeat(50));
+        console.log(`📍 Local:     http://localhost:${PORT}`);
+        if (HOST === '0.0.0.0' && localIP !== 'localhost') {
+            console.log(`🌐 Network:   http://${localIP}:${PORT}`);
+            console.log(`\n💡 Aynı ağdaki cihazlardan erişim için: http://${localIP}:${PORT}`);
+        }
+        console.log('='.repeat(50));
+        console.log('Veritabanını başlatmak için: npm run init-db');
+    });
 });
 
 // Graceful shutdown
