@@ -103,20 +103,27 @@ app.get('/register', (req, res) => {
 // Giriş işlemi
 app.post('/login', (req, res) => {
     const { email, sifre } = req.body;
+    console.log(`Giriş denemesi: ${email}`);
 
     if (!email || !sifre) {
+        console.log('E-posta veya şifre eksik');
         return res.render('login', { hata: 'E-posta ve şifre gereklidir.' });
     }
 
-    db.get('SELECT * FROM kullanıcılar WHERE email = ?', [email], (err, kullanici) => {
+    db.get('SELECT * FROM kullanicilar WHERE email = ?', [email], (err, kullanici) => {
         if (err) {
             console.error('Veritabanı hatası:', err.message);
             return res.render('login', { hata: 'Bir hata oluştu. Lütfen tekrar deneyin.' });
         }
 
         if (!kullanici) {
+            console.log('Kullanıcı bulunamadı:', email);
             return res.render('login', { hata: 'E-posta veya şifre hatalı.' });
         }
+
+        console.log(`Kullanıcı bulundu: ${kullanici.email}, Rol: ${kullanici.rol}`);
+        console.log(`DB Şifre Hash: ${kullanici.sifre}`);
+        console.log(`Girilen Şifre: ${sifre}`);
 
         // Şifre kontrolü
         bcrypt.compare(sifre, kullanici.sifre, (err, match) => {
@@ -125,7 +132,10 @@ app.post('/login', (req, res) => {
                 return res.render('login', { hata: 'Bir hata oluştu. Lütfen tekrar deneyin.' });
             }
 
+            console.log(`Şifre eşleşmesi: ${match}`);
+
             if (match) {
+                console.log('Giriş başarılı!');
                 // Session'a kullanıcı bilgilerini kaydet
                 req.session.kullanici = {
                     id: kullanici.id,
@@ -136,6 +146,7 @@ app.post('/login', (req, res) => {
                 };
                 res.redirect('/');
             } else {
+                console.log('Şifre yanlış!');
                 res.render('login', { hata: 'E-posta veya şifre hatalı.' });
             }
         });
@@ -169,7 +180,7 @@ app.post('/register', (req, res) => {
     const kullaniciRol = rol === 'admin' ? 'musteri' : (rol || 'musteri');
 
     // E-posta kontrolü
-    db.get('SELECT * FROM kullanıcılar WHERE email = ?', [email], (err, mevcutKullanici) => {
+    db.get('SELECT * FROM kullanicilar WHERE email = ?', [email], (err, mevcutKullanici) => {
         if (err) {
             console.error('Veritabanı hatası:', err.message);
             return res.render('register', { hata: 'Bir hata oluştu. Lütfen tekrar deneyin.' });
@@ -187,7 +198,7 @@ app.post('/register', (req, res) => {
             }
 
             // Kullanıcıyı veritabanına ekle
-            db.run('INSERT INTO kullanıcılar (email, sifre, rol, ad, soyad) VALUES (?, ?, ?, ?, ?)',
+            db.run('INSERT INTO kullanicilar (email, sifre, rol, ad, soyad) VALUES (?, ?, ?, ?, ?)',
                 [email, hash, kullaniciRol, ad || null, soyad || null],
                 function (err) {
                     if (err) {
@@ -379,7 +390,7 @@ app.get('/siparislerim', requireAuth, (req, res) => {
 // Admin paneli ana sayfa
 app.get('/admin', requireAuth, requireAdmin, (req, res) => {
     // Kullanıcı sayısı
-    db.get('SELECT COUNT(*) as count FROM kullanıcılar', [], (err, kullaniciSayisi) => {
+    db.get('SELECT COUNT(*) as count FROM kullanicilar', [], (err, kullaniciSayisi) => {
         // Sipariş sayısı
         db.get('SELECT COUNT(*) as count FROM siparisler', [], (err, siparisSayisi) => {
             // Ürün sayısı
@@ -403,7 +414,7 @@ app.get('/admin', requireAuth, requireAdmin, (req, res) => {
 
 // Admin - Kullanıcılar listesi
 app.get('/admin/kullanicilar', requireAuth, requireAdmin, (req, res) => {
-    db.all('SELECT id, email, rol, ad, soyad, olusturma_tarihi FROM kullanıcılar ORDER BY olusturma_tarihi DESC',
+    db.all('SELECT id, email, rol, ad, soyad, olusturma_tarihi FROM kullanicilar ORDER BY olusturma_tarihi DESC',
         [], (err, kullanicilar) => {
             if (err) {
                 console.error('Kullanıcı listesi hatası:', err.message);
@@ -419,7 +430,7 @@ app.get('/admin/kullanicilar', requireAuth, requireAdmin, (req, res) => {
 // Admin - Tüm kullanıcıları sil ve yeni admin oluştur
 app.post('/admin/kullanicilar/reset', requireAuth, requireAdmin, (req, res) => {
     // Önce tüm kullanıcıları sil
-    db.run('DELETE FROM kullanıcılar', (err) => {
+    db.run('DELETE FROM kullanicilar', (err) => {
         if (err) {
             console.error('Kullanıcı silme hatası:', err.message);
             return res.json({ success: false, message: 'Kullanıcılar silinemedi.' });
@@ -465,7 +476,7 @@ app.post('/admin/kullanicilar/reset', requireAuth, requireAdmin, (req, res) => {
 app.get('/admin/siparisler', requireAuth, requireAdmin, (req, res) => {
     db.all(`SELECT s.*, k.email, k.ad, k.soyad
             FROM siparisler s
-            JOIN kullanıcılar k ON s.kullanici_id = k.id
+            JOIN kullanicilar k ON s.kullanici_id = k.id
             ORDER BY s.olusturma_tarihi DESC`,
         [], (err, siparisler) => {
             if (err) {
